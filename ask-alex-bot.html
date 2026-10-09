@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f4f2ed" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#151616" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="data:," />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Public+Sans:wght@400;500;650&display=swap" rel="stylesheet" />
+    <title>Ask Alex Bot</title>
+    <style>
+      :root {
+        --bg: #f4f2ed;
+        --panel: #ffffff;
+        --ink: #171918;
+        --muted: #5c625f;
+        --line: #d6d4ce;
+        --bot: #e9e7e1;
+        --user: #173d35;
+        --user-ink: #ffffff;
+        --accent: #d85b2b;
+        --accent-hover: #b9471e;
+        --focus: #167d67;
+        --shadow: 0 18px 50px rgba(27, 31, 29, 0.11);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #151616;
+          --panel: #1e201f;
+          --ink: #f4f2ed;
+          --muted: #b6bbb7;
+          --line: #3b3f3d;
+          --bot: #2a2d2b;
+          --user: #296b5b;
+          --user-ink: #ffffff;
+          --accent: #f17845;
+          --accent-hover: #ff8e5d;
+          --focus: #73c9b4;
+          --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+        }
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body { min-height: 100%; }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Public Sans", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      button, input { font: inherit; }
+
+      main {
+        min-height: 100svh;
+        display: grid;
+        place-items: center;
+        padding: clamp(16px, 3vw, 32px);
+      }
+
+      .chat-shell {
+        width: min(100%, 720px);
+        height: min(780px, calc(100svh - clamp(32px, 6vw, 64px)));
+        min-height: 520px;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        overflow: hidden;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow);
+      }
+
+      .disclaimer {
+        margin: 0;
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 0.82rem;
+        line-height: 1.48;
+      }
+
+      .disclaimer strong { color: var(--ink); font-weight: 650; }
+
+      .messages {
+        min-height: 0;
+        overflow-y: auto;
+        padding: 24px 20px 18px;
+        scroll-behavior: smooth;
+        overscroll-behavior: contain;
+      }
+
+      .message-row {
+        display: flex;
+        margin-bottom: 13px;
+      }
+
+      .message-row.user { justify-content: flex-end; }
+
+      .bubble {
+        width: fit-content;
+        max-width: min(84%, 520px);
+        padding: 11px 14px 12px;
+        border-radius: 16px 16px 16px 4px;
+        background: var(--bot);
+        color: var(--ink);
+        font-size: 0.96rem;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+
+      .message-row.user .bubble {
+        border-radius: 16px 16px 4px 16px;
+        background: var(--user);
+        color: var(--user-ink);
+      }
+
+      .ask-alex {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 10px;
+        padding: 9px 12px;
+        border-radius: 8px;
+        background: var(--accent);
+        color: #fff;
+        font-size: 0.86rem;
+        font-weight: 650;
+        text-decoration: none;
+      }
+
+      .ask-alex:hover { background: var(--accent-hover); }
+
+      .composer {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        padding: 14px;
+        padding-bottom: max(14px, env(safe-area-inset-bottom));
+        border-top: 1px solid var(--line);
+        background: var(--panel);
+      }
+
+      .composer input {
+        width: 100%;
+        min-width: 0;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--bg);
+        color: var(--ink);
+        padding: 12px 13px;
+        outline: none;
+      }
+
+      .composer input::placeholder { color: var(--muted); }
+
+      .composer input:focus {
+        border-color: var(--focus);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 22%, transparent);
+      }
+
+      .composer button {
+        min-width: 84px;
+        border: 0;
+        border-radius: 10px;
+        padding: 0 18px;
+        background: var(--accent);
+        color: #fff;
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 1.05rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        cursor: pointer;
+      }
+
+      .composer button:hover { background: var(--accent-hover); }
+      .composer button:disabled { opacity: 0.55; cursor: default; }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      @media (max-width: 560px) {
+        main { padding: 0; place-items: stretch; }
+        .chat-shell {
+          width: 100%;
+          height: 100svh;
+          min-height: 0;
+          border: 0;
+          box-shadow: none;
+        }
+        .disclaimer { padding: 13px 15px; font-size: 0.77rem; }
+        .messages { padding: 19px 14px 12px; }
+        .bubble { max-width: 89%; }
+        .composer { padding: 11px; padding-bottom: max(11px, env(safe-area-inset-bottom)); }
+        .composer button { min-width: 72px; padding-inline: 13px; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .messages { scroll-behavior: auto; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="chat-shell" aria-label="Ask Alex chatbot">
+        <p class="disclaimer"><strong>This is a bot, not Alex.</strong> It's built from the typical answers he's given over the years, so it's a decent starting point for questions — but it's not him.</p>
+
+        <div class="messages" id="messages" aria-live="polite" aria-label="Conversation">
+          <div class="message-row bot">
+            <div class="bubble">hello, who am I talking to? I just need a name to address you</div>
+          </div>
+        </div>
+
+        <form class="composer" id="composer">
+          <label class="sr-only" for="messageInput">Your name</label>
+          <input id="messageInput" name="message" type="text" inputmode="text" autocomplete="name" maxlength="500" placeholder="Type your name" required />
+          <button id="sendButton" type="submit">Send</button>
+        </form>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        var LOG_ENDPOINT = "https://igksegnaoqogcpjdyomp.supabase.co/rest/v1/chatbot_logs";
+        var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlna3NlZ25hb3FvZ2NwamR5b21wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NTc5NTMsImV4cCI6MjEwNzEzMzk1M30.kp4diq1Xbc_Sp0ryrupEZG53Ugmbcohi05HyDkMrw0M";
+        var FALLBACK = "I don't have all the answers so you can ask the halls or ask Alex to update my database.";
+        var HALL_ONLY = "That's a hall conversation — talk to your hall for details.";
+
+        var messages = document.getElementById("messages");
+        var composer = document.getElementById("composer");
+        var input = document.getElementById("messageInput");
+        var sendButton = document.getElementById("sendButton");
+        var visitorName = "";
+
+        function normalize(text) {
+          return text
+            .toLowerCase()
+            .replace(/[’']/g, "")
+            .replace(/[^a-z0-9@]+/g, " ")
+            .replace(/\s+/g, " ")
+            .trim();
+        }
+
+        function hasAny(text, terms) {
+          return terms.some(function (term) { return text.indexOf(term) !== -1; });
+        }
+
+        function addMessage(text, who, askLink) {
+          var row = document.createElement("div");
+          row.className = "message-row " + who;
+          var bubble = document.createElement("div");
+          bubble.className = "bubble";
+          bubble.textContent = text;
+
+          if (askLink) {
+            var link = document.createElement("a");
+            link.className = "ask-alex";
+            link.textContent = "Ask Alex";
+            link.href = "mailto:wakelandcorp@gmail.com?subject=" + encodeURIComponent("Question from " + visitorName) + "&body=" + encodeURIComponent("Hi Alex,\n\n" + visitorName + " asked the bot:\n\"" + askLink + "\"\n\n");
+            bubble.appendChild(document.createElement("br"));
+            bubble.appendChild(link);
+          }
+
+          row.appendChild(bubble);
+          messages.appendChild(row);
+          messages.scrollTop = messages.scrollHeight;
+        }
+
+        function answerQuestion(question) {
+          var q = normalize(question);
+
+          if (
+            (hasAny(q, ["jnctn", "junction"]) && hasAny(q, ["price", "pricing", "cost", "charge", "fee", "fees", "rate", "rates", "how much", "revenue", "commission", "equity", "ownership", "internal", "internals", "strategy", "business model", "secret"])) ||
+            hasAny(q, ["jnctn internals", "jnctn strategy", "jnctn fees", "jnctn pricing"])
+          ) {
+            return { answer: HALL_ONLY, fallback: false };
+          }
+
+          if (hasAny(q, ["sell my data", "sell data", "data sales", "selling data", "sell member data", "jnctn privacy", "who owns the data"])) {
+            return { answer: "No. No ads, no data sales, ever. The hall owns the data, the rules, and the dashboard.", fallback: false };
+          }
+
+          if (hasAny(q, ["become a lineman", "be a lineman", "get into the apprenticeship", "join the apprenticeship", "lineman apprenticeship", "jatc", "apprentice program", "apprenticeship program", "start an apprenticeship"])) {
+            return { answer: "Apply through your local IBEW JATC apprenticeship program — that's the union path. About 4 years, you earn while you learn. Your hall can point you to the right JATC.", fallback: false };
+          }
+
+          if (hasAny(q, ["find work", "looking for work", "job calls", "union jobs", "where is the work", "work available", "tramp here bro", "trampherebro"])) {
+            return { answer: "If you're looking for work, check TrampHereBro — union job calls. Link's on my link tree.", fallback: false };
+          }
+
+          if ((hasAny(q, ["lineman", "journeyman", "jl"]) && hasAny(q, ["make", "pay", "salary", "wage", "earn"])) || hasAny(q, ["what do linemen make", "lineman pay", "lineman salary"])) {
+            return { answer: "Depends where and what — journeyman linemen generally run well into six figures with overtime, but your hall has the real numbers for your area.", fallback: false };
+          }
+
+          if (hasAny(q, ["when is the rodeo", "linemans rodeo", "lineman rodeo", "international rodeo", "rodeo date", "rodeo when", "overland park"])) {
+            return { answer: "The International Lineman's Rodeo is October 14-17 in Overland Park, Kansas. Come find me — grab a photo, say hi.", fallback: false };
+          }
+
+          if (hasAny(q, ["follow you", "social media", "tiktok", "instagram", "threads", "youtube", "alexwakeland", "socials"])) {
+            return { answer: "I'm @alexwakeland on TikTok, Instagram, Threads, and YouTube — all linked on my link tree.", fallback: false };
+          }
+
+          if (hasAny(q, ["gear i use", "what gear", "what boots", "what tools", "boots do you use", "tools do you use", "gear do you use", "boot recommendation", "tool recommendation"])) {
+            return { answer: "Check the 'Gear I Use' section on my link tree — that's what I actually run.", fallback: false };
+          }
+
+          if (hasAny(q, ["switch over", "switch to the union", "join the union", "white ticket", "signing the books", "journeyman testing", "union switch over help"])) {
+            return { answer: "Look up the ‘IBEW Union Switch Over Help’ group on Facebook — covers white ticket, signing the books, traveling, journeyman testing.", fallback: false };
+          }
+
+          if (hasAny(q, ["which halls", "what halls", "halls take jnctn", "halls use jnctn", "locals take jnctn", "locals use jnctn", "876", "443", "1245"])) {
+            return { answer: "Local 876, 443, 1245 among others.", fallback: false };
+          }
+
+          if (hasAny(q, ["data war", "workforce data", "brotherhood into the product", "member data security", "data security standard"])) {
+            return { answer: "Workforce-data platforms are turning the brotherhood into the product. The fix is a member-data security standard — third-party run, binding on everyone including the halls.", fallback: false };
+          }
+
+          if (hasAny(q, ["book alex", "book you", "speaking", "speak at", "speaker", "podcast", "interview alex", "booking inquiry"])) {
+            return { answer: "Email booking inquiry to wakelandcorp@gmail.com.", fallback: false };
+          }
+
+          if (hasAny(q, ["wakeland wire", "newsletter", "mailing list"])) {
+            return { answer: "His newsletter — he approves every name by hand. Sign up on his link tree.", fallback: false };
+          }
+
+          if (hasAny(q, ["syngyn", "mfjl", "peppers", "affiliate code"])) {
+            return { answer: "An affiliate he actually uses. Code MFJL gets $ off. He calls what they sell ‘peppers.’", fallback: false };
+          }
+
+          if (hasAny(q, ["who is alex", "about alex", "alex wakeland", "what does alex do", "where is alex from"])) {
+            return { answer: "IBEW Local 145 journeyman lineman, Viola IL, self-employed.", fallback: false };
+          }
+
+          if (hasAny(q, ["what is jnctn", "whats jnctn", "jnctn what", "jnctn do", "about jnctn", "junction app"])) {
+            return { answer: "Worker-centered credential and workforce infrastructure. Alex is industry adviser and US advocate, not the founder.", fallback: false };
+          }
+
+          return { answer: FALLBACK, fallback: true };
+        }
+
+        function postLog(payload, isRetry) {
+          var retryScheduled = false;
+          var request = new XMLHttpRequest();
+
+          function retryOnce() {
+            if (!isRetry && !retryScheduled) {
+              retryScheduled = true;
+              window.setTimeout(function () {
+                postLog(payload, true);
+              }, 750);
+            }
+          }
+
+          function fail() {
+            retryOnce();
+          }
+
+          request.open("POST", LOG_ENDPOINT, true);
+          request.setRequestHeader("apikey", SUPABASE_KEY);
+          request.setRequestHeader("Authorization", "Bearer " + SUPABASE_KEY);
+          request.setRequestHeader("Content-Type", "application/json");
+          request.setRequestHeader("Prefer", "return=minimal");
+          request.timeout = 10000;
+          request.onload = function () {
+            if (request.status < 200 || request.status >= 300) {
+              fail();
+            }
+          };
+          request.onerror = fail;
+          request.ontimeout = fail;
+          request.onabort = fail;
+          request.send(JSON.stringify(payload));
+        }
+
+        function logExchange(question, result) {
+          postLog({
+            visitor_name: visitorName,
+            question: question,
+            answer: result.answer,
+            was_fallback: result.fallback
+          }, false);
+        }
+
+        composer.addEventListener("submit", function (event) {
+          event.preventDefault();
+          var text = input.value.trim();
+          if (!text) return;
+
+          sendButton.disabled = true;
+          addMessage(text, "user");
+          input.value = "";
+
+          if (!visitorName) {
+            visitorName = text.slice(0, 80);
+            input.autocomplete = "off";
+            input.placeholder = "Ask a question";
+            input.maxLength = 500;
+            var greeting = "Good to meet you, " + visitorName + ". What can I help with?";
+            logExchange(text, { answer: greeting, fallback: false });
+            window.setTimeout(function () {
+              addMessage(greeting, "bot");
+              sendButton.disabled = false;
+              input.focus();
+            }, 180);
+            return;
+          }
+
+          var result = answerQuestion(text);
+          logExchange(text, result);
+          window.setTimeout(function () {
+            addMessage(result.answer, "bot", result.fallback ? text : "");
+            sendButton.disabled = false;
+            input.focus();
+          }, 180);
+        });
+
+        window.setTimeout(function () { input.focus(); }, 120);
+      })();
+    </script>
+  </body>
+</html>
