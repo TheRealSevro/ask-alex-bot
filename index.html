@@ -257,13 +257,13 @@
 
         <div class="messages" id="messages" aria-live="polite" aria-label="Conversation">
           <div class="message-row bot">
-            <div class="bubble">hello, who am I talking to? I just need a name to address you</div>
+            <div class="bubble">hello, who am I talking to? A name's handy so I know what to call you — or just skip it and ask your question</div>
           </div>
         </div>
 
         <form class="composer" id="composer">
-          <label class="sr-only" for="messageInput">Your name</label>
-          <input id="messageInput" name="message" type="text" inputmode="text" autocomplete="name" maxlength="500" placeholder="Type your name" required />
+          <label class="sr-only" for="messageInput">Your name (optional)</label>
+          <input id="messageInput" name="message" type="text" inputmode="text" autocomplete="name" maxlength="500" placeholder="Name (optional) — or just ask" />
           <button id="sendButton" type="submit">Send</button>
         </form>
 
@@ -278,18 +278,18 @@
         var LOG_ENDPOINT = "https://igksegnaoqogcpjdyomp.supabase.co/rest/v1/chatbot_logs";
         var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlna3NlZ25hb3FvZ2NwamR5b21wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NTc5NTMsImV4cCI6MjEwNzEzMzk1M30.kp4diq1Xbc_Sp0ryrupEZG53Ugmbcohi05HyDkMrw0M";
         var FALLBACKS = [
-          "Don't have that one yet — check back tomorrow, I get updated daily. Or tap Ask Alex below and he'll feed it to me.",
-          "That's above what I know right now. I'm due for an update — check back tomorrow. Your hall can answer it today.",
-          "No clue on that one yet, but I learn new stuff daily — try me tomorrow. Or ask Alex directly with the button below.",
-          "That one's not in my wheelhouse yet — they feed me new answers every day, so swing back by. Your hall's the fastest route to the answer today.",
-          "Haven't got that one loaded yet — they top me up regular, so check back in. Hit the Ask Alex button below if you need it sooner.",
-          "That one's still over my head — they add to me regular, so check back later. Tap the Ask Alex button below, or check with your hall if you need it now.",
-          "Can't help you on that one yet — I get fed new answers all the time, so try again soon. Your hall will know, or hit Ask Alex below.",
-          "Don't have an answer on that one in me yet — they reload me regular, so check back down the road a bit. Your hall can help today, or tap Ask Alex below.",
-          "Not one I know yet — they stock me up regular, so come back by later. Your hall can get you straight today, or hit the Ask Alex button below.",
-          "Still drawing a blank on that one — they keep adding to me, so give it another shot later. For today, your hall or the Ask Alex button below is your best route.",
-          "That one's not in my toolbox yet — they add to it near every day, so come back around and try me again. For right now, your hall can cover it, or tap the Ask Alex button below.",
-          "I ain't got that one figured yet — they patch me up regular, so pass back through another time. Your hall can sort it today, or hit the Ask Alex button down below."
+          "That one hasn't reached me yet — they update me on the regular, so check back after a bit. For now, take it to your hall or tap the Ask Alex button below.",
+          "That one ain't on my board yet — they fill me in pretty often, so poke back in later on. Your hall's got it today, or drop it through the Ask Alex button below.",
+          "That one I can't call yet — they bring me new stuff pretty regular, so swing back in a while. Meantime run it by your hall, or send it through Ask Alex below.",
+          "Haven't heard that one come down the line yet — they load me up with new stuff steady, so try me again later. Run it past your hall, or push it through the Ask Alex button below.",
+          "I'm coming up short on that one — just ain't got it yet. They restock me regular, so check back soon — your hall can help today, or tap the Ask Alex button below.",
+          "That question's past what I know right now — they top me off pretty steady, so try me again in a bit. Till then, your hall's your surest bet, or use the Ask Alex button below.",
+          "No dice on that one from me yet — I pick up new answers as they keep building me out, so ask again on your next pass. Call your hall if you need it now, or tap Ask Alex below.",
+          "That one's beyond me for now — fresh answers keep showing up in here, so ask me again sometime soon. If it can't wait, your hall can help, or send it through Ask Alex below.",
+          "I'm empty-handed on that one for now — they add fresh answers in here steady, so try me again later on. For today, check with your hall or send it in through the Ask Alex button below.",
+          "I haven't got a hold of that one yet — they keep putting fresh answers in here, so come back and ask again later. Talk to your hall for today, or send it through the Ask Alex button below.",
+          "That one ain't made it to me yet — they keep feeding me new ones, so give me another try down the road. Your hall can get you an answer today, or send it in through the Ask Alex button below.",
+          "That one's still out of my hands for now — they keep me updated regular, so try me again next time through. Your hall can answer it today, or run it through the Ask Alex button below."
         ];
 
         // Conditions answer bank, baked in from contract data. Keys are local numbers.
@@ -331,7 +331,7 @@
           return terms.some(function (term) { return text.indexOf(term) !== -1; });
         }
 
-        function addMessage(text, who, askLink) {
+        function addMessage(text, who, askLink, links) {
           var row = document.createElement("div");
           row.className = "message-row " + who;
           var bubble = document.createElement("div");
@@ -345,6 +345,19 @@
             link.href = "mailto:wakelandcorp@gmail.com?subject=" + encodeURIComponent("Question from " + visitorName) + "&body=" + encodeURIComponent("Hi Alex,\n\n" + visitorName + " asked the bot:\n\"" + askLink + "\"\n\n");
             bubble.appendChild(document.createElement("br"));
             bubble.appendChild(link);
+          }
+
+          if (links && links.length) {
+            links.forEach(function (item) {
+              var a = document.createElement("a");
+              a.className = "ask-alex";
+              a.textContent = item.label;
+              a.href = item.href;
+              a.target = "_blank";
+              a.rel = "noopener";
+              bubble.appendChild(document.createElement("br"));
+              bubble.appendChild(a);
+            });
           }
 
           row.appendChild(bubble);
@@ -433,8 +446,20 @@
             return { answer: "Math and reading — algebra, fractions, reading comprehension. Brush up, sleep right, don't overthink it. Your hall or JATC has the specifics on theirs.", fallback: false };
           }
 
+          if (hasAny(q, ["groundman", "ground man", "get into the trade", "getting into the trade", "tips for getting in", "how do i get in the trade"])) {
+            return { answer: "You're on the right track — that's exactly how plenty of men get in. Stay signed on the groundman books and take the calls you can: those hours are the point, and showing up steady is what gets your name known. The ticket you've already built — Class A with tanker and doubles, CPR/first aid, OSHA 10, flagger — is the stuff halls and contractors actually ask a groundman for, so keep every one of them current. When the apprenticeship opens applications, that groundman time and experience works in your favor — each JATC weighs it their own way, so ask yours what they credit. And ask the halls you're signed with what else they like to see — they'll tell you straight.", fallback: false };
+          }
+
+          if (hasAny(q, ["left my apprenticeship", "left the apprenticeship", "left my union apprenticeship", "quit the apprenticeship", "quit my apprenticeship", "dropped out of the apprenticeship", "dropped out of my apprenticeship", "get back into the apprenticeship", "back into the apprenticeship", "restart my apprenticeship", "rejoin the apprenticeship", "second chance at the apprenticeship", "start the apprenticeship again", "start my apprenticeship again"])) {
+            return { answer: "No — I wouldn't steer you off it. Things change, and life happens. Depending on your situation, the union may be a better fit now than it was then. It's mildly uphill to get back in, but if you've kept moving on the job or improved your skills since, it's worth coming back and trying again — especially right now, while the trade is in need of hands. Talk to the hall or the JATC where you'd restart and lay it out straight with them.", fallback: false };
+          }
+
           if (hasAny(q, ["become a lineman", "be a lineman", "get into the apprenticeship", "join the apprenticeship", "lineman apprenticeship", "jatc", "apprentice program", "apprenticeship program", "start an apprenticeship"])) {
             return { answer: "Apply through your local IBEW JATC apprenticeship program — that's the union path. About 4 years, you earn while you learn. Your hall can point you to the right JATC.", fallback: false };
+          }
+
+          if (hasAny(q, ["side gig", "side gigs", "side hustle", "side hustles", "side job", "side jobs", "side work", "extra money", "second job", "moonlight"])) {
+            return { answer: "The ones I point Brothers to: tree work, making content like I do, and gig work that takes you when you can get it — I know guys who run Uber and Uber Eats between storms. And use what the trade taught you; that's why linemen always have three things going. Keep it clean with your hall, and leave paid side electrical work alone — that one's a CBA problem.", fallback: false };
           }
 
           if (hasAny(q, ["find work", "looking for work", "job calls", "union jobs", "where is the work", "work available", "tramp here bro", "trampherebro", "open calls", "is there work"])) {
@@ -442,6 +467,8 @@
           }
 
           var localNumMatch = q.match(/\blocal\s*(\d+)\b/);
+          var rainLocalMatch = /\brain\s?out\b|\brain rules\b/.test(q) ? q.match(/\b(\d{2,4})\b/) : null;
+          if (!localNumMatch && rainLocalMatch) { localNumMatch = rainLocalMatch; }
           if (localNumMatch && hasAny(q, ["conditions", "scale", "per diem", "perdiem", "pay", "wage", "wages", "rules", "agreement", "contract"])) {
             var localData = CONDITION_DATA[localNumMatch[1]];
             if (localData) {
@@ -466,7 +493,35 @@
           }
 
           if (hasAny(q, ["gear i use", "what gear", "what boots", "what tools", "boots do you use", "tools do you use", "gear do you use", "boot recommendation", "tool recommendation"])) {
-            return { answer: "Check the 'Gear I Use' section on my link tree — that's what I actually run.", fallback: false };
+            return { answer: "It's on Alex's site — alexwakeland.com, the Gear I Use tab. That's the gear he actually runs.", fallback: false };
+          }
+
+          if (hasAny(q, ["get listed", "be listed", "get my shop listed", "list my business", "list my shop", "get on the site", "add my shop", "add my business"])) {
+            return { answer: "Depends what you're listing — three doors on alexwakeland.com. Money pro (planning, taxes, retirement)? The Financials tab, 'I want to be listed' button: paid listings run a full 3 months, same size card for everybody, and the price comes in the reply after your record checks out — it's not posted. Linewife-run shop or project? The Linewife Projects tab, 'Reach out about your project.' A brand or shop of your own? Reach out through the site and Alex will point you — friend-owned brands land on the Friends page, brotherhood-made brands on Support the Brotherhood. A brand deal with Alex himself is the For Brands tab.", fallback: false };
+          }
+
+          if (hasAny(q, ["spotlight", "nominate"])) {
+            return { answer: "The Spotlight of the Week has its own tab on alexwakeland.com — the Spotlight tab, third across the top. Every week Alex points at a smaller creator in the trade who's putting out good work, and the page gives them a full profile. Want in, or got somebody in mind? The 'Nominate a creator' button on that page opens an email to Alex. Earlier picks live on the Friends page under Support Small Creators, and when a spotlighted creator grows past Alex's own following, they graduate to the regular list there.", fallback: false };
+          }
+
+          if (hasAny(q, ["regulars", "join regulars", "be a regular", "add my handle", "get on the friends page", "friends page"])) {
+            return { answer: "The Regulars live on the Friends tab of alexwakeland.com — a fresh five (three smaller creators, two bigger ones) rotates in every Thursday. Want your handle in the rotation? Use the 'Wanna add your handle? Reach out' button on that page — it opens an email: who you are, why you want in, and the socials you want linked. Fair warning, and the site says it plain: getting added is Alex's call alone, and anybody can come off the list any time — nothing's promised.", fallback: false };
+          }
+
+          if (hasAny(q, ["guest book", "guestbook", "sign the wall"])) {
+            return { answer: "The guest book is on the Friends tab of alexwakeland.com — 'Sign the guest book' opens an email with your name or handle, your local or trade, and what to carve into the wall. Entries are reviewed before they show up publicly.", fallback: false };
+          }
+
+          if (hasAny(q, ["financials", "fincial", "financial tab", "financials tab", "find financials", "money guy", "financial advisor", "financial adviser", "financial planning", "tax guy", "retirement planning"])) {
+            return { answer: "It's on Alex's site — alexwakeland.com, the Financials tab across the top. Money talk for linemen: how Alex runs his own taxes, ten questions to ask any money guy before you hire him, free record checks, and a directory of pros who know the trade. Education, not financial advice — he says so himself right on the page.", fallback: false };
+          }
+
+          if (hasAny(q, ["where is", "how do i find", "where do i find", "cant find", "can t find", "on the site", "on his site", "on the website", "on alexs site"])) {
+            return { answer: "Everything's on Alex's site — alexwakeland.com, with tabs across the top: Home (Book Alex is up top), Financials for the money stuff, Spotlight, Friends, Gear I Use, Support the Brotherhood, Resources, Podcast & The Wire, How I Work, For Brands, and AI Improvements. Tell me what you're hunting and I'll point you at the right one.", fallback: false };
+          }
+
+          if (hasAny(q, ["how do i get jnctn", "how do i get on jnctn", "get on jnctn", "how do i join jnctn", "join jnctn", "sign up for jnctn", "download jnctn", "get the jnctn app", "jnctn app", "how do i sign up for jnctn"])) {
+            return { answer: "Any individual can get JNCTN free — grab it from the App Store or Google Play (links under this answer) and capture your own credentials yourself. Your data is yours: you're free to upload it and secure it, and JNCTN walks you through how to share it, step by step — the how-tos are on their help pages, also linked below. One distinction that matters: self-captured is UNVERIFIED until your hall signs on, because your hall owns the verification — that's when it becomes proof a contractor can trust. Halls on it today are Local 876 and Local 443; if yours is one of those, your hall gets you set up verified from the start. If your hall isn't on it yet, here's what speeds it up: members asking their executive board and their BA for a sit-down with Alex. He's available anytime and easy to find, and he'd love the chat — but he won't pester anybody or try to force a meeting; he respects their time too much for that.", fallback: false, links: [ { label: "Get it on the App Store", href: "https://apps.apple.com/us/app/jnctn/id1592948898?uo=4" }, { label: "Get it on Google Play", href: "https://play.google.com/store/apps/details?id=nz.jnctn.ronder" }, { label: "JNCTN help & how-tos", href: "https://help.jnctn.nz/hc/en-us" }, { label: "jnctn.us", href: "https://jnctn.us" } ] };
           }
 
           if (hasAny(q, ["how do i sign", "how to sign", "sign the books", "signing the books", "sign the book", "get on the books", "get on the book", "sign up on the books", "re sign the books", "resign the books"])) {
@@ -493,12 +548,68 @@
             return { answer: "Everyone's scared of that. The apprenticeship needs your hours as much as you do, so they've got skin in keeping you working — but nobody can promise it. Ask the hall about open calls right now.", fallback: false };
           }
 
-          if (hasAny(q, ["lineco", "my hours werent reported", "hours not reported", "didnt report", "never reported", "not reported", "report my hours", "health insurance", "insurance through the hall", "insurance for the month"])) {
-            return { answer: "Contractors report your hours to LINECO — that's what keeps your insurance current. If someone didn't report, call the hall and LINECO both, keep your pay stubs. Don't let it slide.", fallback: false };
+          if (hasAny(q, ["lineco eligible", "lineco eligibility", "eligible for lineco", "when am i covered", "how many hours for insurance", "how many hours do i need for coverage", "125 hours", "am i covered", "insurance for the month", "when does my coverage start", "when do my benefits start"])) {
+            return { answer: "LINECO eligibility runs on credited hours — the hours your employer contributes on. First time: once you hit 125 credited hours in a month, coverage starts the 1st of the benefit month after the lag month — work 125 in December, you're covered February 1. Your dependents come on the same day you do, and kids are covered through age 25. I'm just a clever bot, not a real human — judge for yourself. I'm just a tool built by a guy in his free time, and LINECO's own site is the source that counts.", fallback: false, links: [ { label: "LINECO — Eligibility", href: "https://www.lineco.org/public/benefits/eligibility" } ] };
           }
 
-          if (hasAny(q, ["which halls", "what halls", "halls take jnctn", "halls use jnctn", "locals take jnctn", "locals use jnctn", "876", "443", "1245", "446"])) {
-            return { answer: "Local 876 is the one with JNCTN mandatory and fully deployed — other halls are coming on board. Talk to your hall to see where yours stands.", fallback: false };
+          if (hasAny(q, ["cobra", "short hours", "rollback", "keep my insurance", "keep my coverage", "lose my coverage", "losing coverage", "coverage between jobs", "self pay for coverage", "self-pay"])) {
+            return { answer: "To stay covered you need 125 credited hours a month — but there's a rollback: if your average over the last 12 months is still 125+, you stay eligible through a slow stretch. Short of that, you can self-pay the short hours: (160 minus your credited hours) times the current employer contribution rate, up to 6 months straight — then it's re-earn your hours or COBRA, which runs 18 months for lost hours or a lost job. Utility/REA men: the rollback and short-hours options don't apply to you — check the source. I'm just a clever bot, not a real human — judge for yourself. I'm just a tool built by a guy in his free time, and LINECO's own site is the source that counts.", fallback: false, links: [ { label: "LINECO — Eligibility", href: "https://www.lineco.org/public/benefits/eligibility" } ] };
+          }
+
+          if (hasAny(q, ["hra", "health reimbursement"])) {
+            return { answer: "Your HRA is funded by employer contributions — not every contractor contributes, so not every man has one. Whatever lands in it rolls over year to year. It pays IRS-qualified medical expenses LINECO itself doesn't pay, and it can also cover your short-hour, COBRA, or retiree self-payments — but only after your regular LINECO benefits are used up. Claims need at least $25 at a time, with EOBs or itemized bills; you can file through linecohra.org or the LINECO HRA app. I'm just a clever bot, not a real human — judge for yourself. I'm just a tool built by a guy in his free time, and LINECO's own site is the source that counts.", fallback: false, links: [ { label: "LINECO — HRA", href: "https://www.lineco.org/public/benefits/hra" } ] };
+          }
+
+          if (hasAny(q, ["retiree benefits", "lineco retiree", "coverage after retirement", "retiree coverage", "retired lineman insurance"])) {
+            return { answer: "LINECO retiree coverage is self-pay HEALTH coverage — it's not a pension, and LINECO says plainly it isn't guaranteed in the future. The trap to know: if you elect COBRA instead of Retiree Benefits when you retire, you permanently lose the chance to enter Retiree Benefits later. Reduced retiree rates exist if you've got at least 57,600 work hours. Read the source before you elect anything. I'm just a clever bot, not a real human — judge for yourself. I'm just a tool built by a guy in his free time, and LINECO's own site is the source that counts.", fallback: false, links: [ { label: "LINECO — Retiree Benefits", href: "https://www.lineco.org/public/benefits/retiree" } ] };
+          }
+
+          if (hasAny(q, ["lineco pension", "lineco retirement", "pension through lineco", "lineco annuity"]) || (hasAny(q, ["lineco"]) && hasAny(q, ["pension", "annuity"]))) {
+            return { answer: "LINECO is the health & welfare fund — it doesn't carry your pension. Pension runs through NEBF and your local's own funds, so I won't mix the two and steer you wrong. LINECO's retiree HEALTH coverage is a separate thing — ask me about retiree benefits if that's what you're after.", fallback: false };
+          }
+
+          if (hasAny(q, ["my hours werent reported", "hours not reported", "didnt report", "never reported", "not reported", "report my hours", "missing hours", "hours are missing", "hours not showing", "hours arent showing"])) {
+            return { answer: "Contractors report your hours to LINECO — that's what keeps your insurance current. If hours are missing, don't let it slide: keep your pay stubs, call the hall, and call the LINECO Fund Office at 800-323-7268. And know the deadline — benefit claims have to be in within two years of the date the expense was incurred. I'm just a clever bot, not a real human — judge for yourself. I'm just a tool built by a guy in his free time, and LINECO's own site is the source that counts.", fallback: false, links: [ { label: "LINECO — Contact the Fund Office", href: "https://www.lineco.org/public/about/contact" } ] };
+          }
+
+          if (hasAny(q, ["lineco"])) {
+            return { answer: "LINECO is the health & welfare fund for outside construction — the insurance side of the trade. I can walk you through eligibility (125 credited hours), keeping your coverage between jobs, your HRA, missing hours, and retiree benefits — or the Fund Office is at 800-323-7268. Pension isn't LINECO; that's NEBF and your local's funds. I'm just a clever bot, not a real human — judge for yourself. I'm just a tool built by a guy in his free time, and LINECO's own site is the source that counts.", fallback: false, links: [ { label: "lineco.org", href: "https://www.lineco.org" } ] };
+          }
+
+          if (hasAny(q, ["nebf vesting", "am i vested", "vested in nebf", "break in service", "lose my pension credits", "lose my credits"])) {
+            return { answer: "You're vested in NEBF with 5 Vesting Service Credits — one credit for each year you work 1,000+ covered hours (a year with 300+ hours counts as a Good Year). Once you're vested, your credits can never be taken away. Before you're vested, be careful: five straight years without a Good Year is a Break in Service, and it wipes every credit you've built. I'm just a clever bot, not a real human — judge for yourself. I'm just a tool built by a guy in his free time, and the fund's own documents are the source that counts.", fallback: false, links: [ { label: "nebf.com", href: "https://www.nebf.com" } ] };
+          }
+
+          if (hasAny(q, ["nebf retirement age", "early retirement nebf", "retire at 62", "retire at 60", "retire at 61", "when can i retire", "nebf retire", "retirement age for nebf"])) {
+            return { answer: "Normal NEBF retirement is 65, vested and retired from the industry — no age reduction. Early: at 62 your benefit is UNREDUCED if you're vested, retired from the industry, and worked 300+ covered hours in any of the 7 years before your pension starts. At 60 or 61 it's reduced 9.25% for each year you're under 62 — that's 18.5% at 60, 9.25% at 61 — with its own recent-work test. I'm just a clever bot, not a real human — judge for yourself. I'm just a tool built by a guy in his free time, and the fund's own documents are the source that counts.", fallback: false, links: [ { label: "nebf.com", href: "https://www.nebf.com" } ] };
+          }
+
+          if (hasAny(q, ["nebf disability", "neap disability", "disabled pension", "disability pension", "cant work anymore", "disability benefit"])) {
+            return { answer: "The two funds test disability differently, and it matters. NEBF is the hard test: TOTAL disability — unable to perform any work, expected to last 12+ months — with a Social Security disability award; it pays on a minimum of 20 Pension Credits with no age reduction. NEAP is an own-occupation test: unable to do your own job classification, under 55. A man can fail NEBF's test and still qualify under NEAP's. Either way, this is fund-office territory — 301-556-4300. I'm just a clever bot, not a real human — judge for yourself. I'm just a tool built by a guy in his free time, and the fund's own documents are the source that counts.", fallback: false, links: [ { label: "nebf.com", href: "https://www.nebf.com" } ] };
+          }
+
+          if (hasAny(q, ["neap withdrawal", "cash out annuity", "cash out my annuity", "hardship withdrawal", "get my annuity money", "withdraw from neap", "pull my annuity"])) {
+            return { answer: "NEAP money is retirement money, and the plan guards it like it: there are NO partial withdrawals and NO hardship benefit — don't let anybody tell you different. The Retirement Benefit opens at 55, vested and retired from covered work: lump sum, a Joint & Survivor annuity (balance over $5,000), or fixed monthly payments over 5/10/15/20 years (balance over $10,000). The one early door is narrow — the Withdrawal Benefit: out of covered work 36+ straight months, under 55, and total employer contributions of $10,000 or less, and then it's your whole balance or nothing. I'm just a clever bot, not a real human — judge for yourself. I'm just a tool built by a guy in his free time, and the fund's own documents are the source that counts.", fallback: false, links: [ { label: "NEAP — nebf.com/neap", href: "https://www.nebf.com/neap" } ] };
+          }
+
+          if (hasAny(q, ["nebf", "national electrical benefit fund", "pension fund basics"])) {
+            return { answer: "NEBF is the national pension — a defined-benefit plan funded entirely by employer contributions: 3% of gross labor payroll. You don't contribute a dime and there's no individual account with your name on a balance. Your monthly benefit is your Pension Credits multiplied by the pension rate — $33 per credit if you retire effective January 1, 2025 or later. I'm just a clever bot, not a real human — judge for yourself. I'm just a tool built by a guy in his free time, and the fund's own documents are the source that counts.", fallback: false, links: [ { label: "nebf.com", href: "https://www.nebf.com" } ] };
+          }
+
+          if (hasAny(q, ["neap", "national electrical annuity", "annuity plan", "my annuity account", "annuity fund"])) {
+            return { answer: "NEAP is the annuity — the opposite setup from NEBF. This one IS an individual account with your name on it. You're in, and vested, after just 160 covered hours. Employers contribute on your hours — the rate is set by your local agreement, at least 25 cents an hour — you contribute nothing, and the money rides the market, by default in age-based Life Stage Funds. Your benefit is whatever your account balance is. I'm just a clever bot, not a real human — judge for yourself. I'm just a tool built by a guy in his free time, and the fund's own documents are the source that counts.", fallback: false, links: [ { label: "NEAP — nebf.com/neap", href: "https://www.nebf.com/neap" } ] };
+          }
+
+          if (hasAny(q, ["job board", "job boards", "jobboard", "jobs board"])) {
+            return { answer: "We will assist the hall in whatever direction they want to go, at their direction. JNCTN is not an authority and doesn't own the data that stays owned by the halls and the individuals respectively. JNCTN is a secure transport of proof.", fallback: false };
+          }
+
+          if (hasAny(q, ["in talks", "whos next", "who is next", "which halls are next", "when does my hall get", "when does my local get", "when is my hall getting", "when is my local getting", "getting jnctn soon", "coming to jnctn"])) {
+            return { answer: "That's the halls' news to break, not mine — the ones on JNCTN today are Local 876 and Local 443. If your hall is looking at it, they'll announce it when they're ready. Best move is to ask your hall where it stands.", fallback: false };
+          }
+
+          if (hasAny(q, ["which halls", "what halls", "halls take jnctn", "halls use jnctn", "locals take jnctn", "locals use jnctn", "halls on jnctn", "locals on jnctn", "jnctn halls", "jnctn locals", "whos on jnctn", "who is on jnctn", "what locals are on", "which locals are on"]) || (hasAny(q, ["876", "443", "1245", "446"]) && hasAny(q, ["jnctn", "junction", "credential", "wallet"]))) {
+            return { answer: "Local 876 and Local 443 — those are the halls on JNCTN. 876's got it mandatory and fully deployed. No other hall is on it yet — Alex is working closely with a few to bring them on, but those announcements are up to the halls themselves. Talk to your hall to see where yours stands.", fallback: false };
           }
 
           if (hasAny(q, ["data war", "workforce data", "brotherhood into the product", "member data security", "data security standard"])) {
@@ -518,7 +629,7 @@
           }
 
           if (hasAny(q, ["who is alex", "about alex", "alex wakeland", "what does alex do", "where is alex from"])) {
-            return { answer: "IBEW Local 145 journeyman lineman, Viola IL, self-employed.", fallback: false };
+            return { answer: "IBEW Local 145 journeyman lineman, Quad Cities IL, self-employed.", fallback: false };
           }
 
           if (hasAny(q, ["verify", "verification", "who verifies", "does jnctn verify", "prove my ticket", "prove ticket", "ticket anywhere", "can call and verify"])) {
@@ -594,6 +705,15 @@
             return { answer: "You got it — holler any time. Stay safe out there.", fallback: false };
           }
 
+          var wordCount = q.split(" ").filter(function (w) { return w.length > 0; }).length;
+          if (wordCount <= 4) {
+            fallbackIdx++;
+            return { answer: "I want to get you pointed right — give me a little more on that. Is it about work or the books, JNCTN, or something on Alex's site?", fallback: true };
+          }
+          if (fallbackIdx > 0 && fallbackIdx % 4 === 3) {
+            fallbackIdx++;
+            return { answer: "We're open to suggestions to improve — I'm a one man show at the moment, so I'm doing my best.", fallback: true };
+          }
           return { answer: FALLBACKS[fallbackIdx++ % FALLBACKS.length], fallback: true };
         }
 
@@ -645,20 +765,41 @@
           if (sending) return;
 
           var text = input.value.trim();
-          if (!text) return;
+          if (!text) {
+            if (visitorName) return;
+            visitorName = "(no name given)";
+            input.autocomplete = "off";
+            input.placeholder = "Ask a question";
+            var skipGreeting = "Good to meet you. Quick word — I'm a bot, and I get things wrong sometimes, so double-check anything that matters with your hall. What can I help with?";
+            logExchange("(skipped name)", { answer: skipGreeting, fallback: false });
+            addMessage(skipGreeting, "bot");
+            input.focus();
+            return;
+          }
 
           sending = true;
           sendButton.disabled = true;
           addMessage(text, "user");
           input.value = "";
 
+          var preResult = null;
           if (!visitorName) {
+            var probe = answerQuestion(text);
+            var looksQuestion = !probe.fallback || /\?\s*$/.test(text) || /^(how|what|where|when|why|can|could|do|does|did|is|are|was|were|should|would|who)\b/i.test(text);
+            if (looksQuestion) {
+              visitorName = "(asked without a name)";
+              preResult = probe;
+              input.autocomplete = "off";
+              input.placeholder = "Ask a question";
+              input.maxLength = 500;
+            } else {
             visitorName = text.slice(0, 80);
             input.autocomplete = "off";
             input.placeholder = "Ask a question";
             input.maxLength = 500;
             var nameIsBait = /(hate|suck|fuck|shit|trash|garbage|scam|stupid|idiot|dork|trampgps|tramp gps|loser|bitch|damn)/i.test(visitorName);
-            var greeting = (!nameIsBait && visitorName.length <= 30)
+            var nameWordCount = visitorName.trim().split(/\s+/).length;
+            var greeting = (!nameIsBait && visitorName.length <= 30 && nameWordCount <= 3)
               ? "Good to meet you, " + visitorName + ". Quick word — I'm a bot, and I get things wrong sometimes, so double-check anything that matters with your hall. What can I help with?"
               : "Good to meet you. Quick word — I'm a bot, and I get things wrong sometimes, so double-check anything that matters with your hall. What can I help with?";
             logExchange(text, { answer: greeting, fallback: false });
@@ -669,9 +810,10 @@
               input.focus();
             }, 180);
             return;
+            }
           }
 
-          var result = answerQuestion(text);
+          var result = preResult || answerQuestion(text);
           logExchange(text, result);
           questionCount += 1;
           if (questionCount > 5 && !donateShaken) {
@@ -683,7 +825,7 @@
             }
           }
           window.setTimeout(function () {
-            addMessage(result.answer, "bot", result.fallback ? text : "");
+            addMessage(result.answer, "bot", result.fallback ? text : "", result.links || null);
             sending = false;
             sendButton.disabled = false;
             input.focus();
