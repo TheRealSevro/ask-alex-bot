@@ -278,7 +278,6 @@
         var LOG_ENDPOINT = "https://igksegnaoqogcpjdyomp.supabase.co/rest/v1/chatbot_logs";
         var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlna3NlZ25hb3FvZ2NwamR5b21wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NTc5NTMsImV4cCI6MjEwNzEzMzk1M30.kp4diq1Xbc_Sp0ryrupEZG53Ugmbcohi05HyDkMrw0M";
         var FALLBACKS = [
-          "Haven't heard that one come down the line yet — they load me up with new stuff steady, so try me again later. Run it past your hall, or push it through the Ask Alex button below.",
           "I'm coming up short on that one — just ain't got it yet. They restock me regular, so check back soon — your hall can help today, or tap the Ask Alex button below.",
           "That question's past what I know right now — they top me off pretty steady, so try me again in a bit. Till then, your hall's your surest bet, or use the Ask Alex button below.",
           "No dice on that one from me yet — I pick up new answers as they keep building me out, so ask again on your next pass. Call your hall if you need it now, or tap Ask Alex below.",
@@ -289,7 +288,8 @@
           "That one's still out of my hands for now — they keep me updated regular, so try me again next time through. Your hall can answer it today, or run it through the Ask Alex button below.",
           "Can't speak to that one yet — new answers land in here all the time, so give it another shot later. If you need it today, your hall's the call, or hit the Ask Alex button below.",
           "That one hasn't made it to the job trailer yet — they bring me fresh answers on the regular, so ask again when you swing back. Need it now, your hall's the place, or use the Ask Alex button below.",
-          "That one's not in my bucket yet — they fill me in with new answers near every day, so circle back and try me again. Your hall can square you away today, or shoot it through the Ask Alex button below."
+          "That one's not in my bucket yet — they fill me in with new answers near every day, so circle back and try me again. Your hall can square you away today, or shoot it through the Ask Alex button below.",
+          "That one's still out on the wire for me — they keep me updated with fresh answers regular, so check back next time around. Your hall can get you sorted today, or send it through the Ask Alex button below."
         ];
 
         // Conditions answer bank, baked in from contract data. Keys are local numbers.
@@ -460,7 +460,15 @@
             return { answer: "You're on the right track — that's exactly how plenty of men get in. Stay signed on the groundman books and take the calls you can: those hours are the point, and showing up steady is what gets your name known. The ticket you've already built — Class A with tanker and doubles, CPR/first aid, OSHA 10, flagger — is the stuff halls and contractors actually ask a groundman for, so keep every one of them current. When the apprenticeship opens applications, that groundman time and experience works in your favor — each JATC weighs it their own way, so ask yours what they credit. And ask the halls you're signed with what else they like to see — they'll tell you straight.", fallback: false };
           }
 
-          if (hasAny(q, ["left my apprenticeship", "left the apprenticeship", "left my union apprenticeship", "quit the apprenticeship", "quit my apprenticeship", "dropped out of the apprenticeship", "dropped out of my apprenticeship", "kicked out of the apprenticeship", "kicked out of my apprenticeship", "got kicked out", "thrown out of the apprenticeship", "removed from the apprenticeship", "get back into the apprenticeship", "back into the apprenticeship", "restart my apprenticeship", "rejoin the apprenticeship", "second chance at the apprenticeship", "start the apprenticeship again", "start my apprenticeship again"])) {
+          if (hasAny(q, ["apprenticeship was cancelled", "apprenticeship was canceled", "apprenticeship got cancelled", "cancelled my apprenticeship", "canceled my apprenticeship", "my apprenticeship was cancelled", "apprenticeship cancelled", "apprenticeship canceled"]) && hasAny(q, ["test in", "testing in", "test into", "journeyman", "hours", "records", "experience", "reinstate", "denied"])) {
+            return { answer: "Don't start over on paper what you've already done in the field. A cancelled apprenticeship plus that much documented time is a testing-in conversation, not a first-year application: take your records — test scores, passed exams, hours — to the hall's organizer, and they'll lay out what their test-in looks like. Every local runs it different and it's paperwork-heavy, but documented time is what carries it.", fallback: false };
+          }
+
+          if (hasAny(q, ["test into", "testing into", "testing in", "tested in", "test in as", "test in to"]) || (q.indexOf("test in") > -1 && hasAny(q, ["union", "jl", "journeyman", "hall", "local", "ibew"]))) {
+            return { answer: "Testing in is a real path — a hall can bring in an experienced hand as a journeyman by testing him, instead of starting him over in the apprenticeship. It's paperwork-heavy and every local runs it different, so it goes through the local's organizer: bring your documented hours, certs, and experience, and they'll lay out what their test-in looks like. On salting — that's organizer business, not a solo play. Talk to the organizer where you're at before anything else.", fallback: false };
+          }
+
+          if (hasAny(q, ["left my apprenticeship", "left the apprenticeship", "left my union apprenticeship", "quit the apprenticeship", "quit my apprenticeship", "dropped out of the apprenticeship", "dropped out of my apprenticeship", "kicked out of the apprenticeship", "kicked out of my apprenticeship", "got kicked out", "thrown out of the apprenticeship", "removed from the apprenticeship", "apprenticeship was cancelled", "apprenticeship was canceled", "apprenticeship got cancelled", "cancelled my apprenticeship", "canceled my apprenticeship", "my apprenticeship was cancelled", "get back into the apprenticeship", "back into the apprenticeship", "restart my apprenticeship", "rejoin the apprenticeship", "second chance at the apprenticeship", "start the apprenticeship again", "start my apprenticeship again"])) {
             return { answer: "No — I wouldn't steer you off it. Things change, and life happens. Depending on your situation, the union may be a better fit now than it was then. It's mildly uphill to get back in, but if you've kept moving on the job or improved your skills since, it's worth coming back and trying again — especially right now, while the trade is in need of hands. Talk to the hall or the JATC where you'd restart and lay it out straight with them.", fallback: false };
           }
 
@@ -586,6 +594,10 @@
             return { answer: "Bring your pay stubs and everything documenting your time — the hall decides what credits. Don't wait on the DOL card to start the conversation. Talk to the organizer now.", fallback: false };
           }
 
+          if (hasAny(q, ["whats work like", "work like in", "work like at", "how is work in", "hows work in", "work picture in"])) {
+            return { answer: "I don't carry a live work picture for individual locals — work opens and closes week to week, and a stale answer would just send you wrong. For the current picture, go to the source: the hall's own job calls or hotline, and a word with the dispatcher before you roll anywhere. If you're already signed there, keep your re-sign current so you're in line when it turns.", fallback: false };
+          }
+
           if (hasAny(q, ["will i stay working", "stay busy", "work outlook", "workload", "afraid of being out of work", "out of work", "scared of being out of work", "provide for my family"])) {
             return { answer: "Everyone's scared of that. The apprenticeship needs your hours as much as you do, so they've got skin in keeping you working — but nobody can promise it. Ask the hall about open calls right now.", fallback: false };
           }
@@ -650,8 +662,16 @@
             return { answer: "NEBF is the national pension — a defined-benefit plan funded entirely by employer contributions: 3% of gross labor payroll. You don't contribute a dime and there's no individual account with your name on a balance. Your monthly benefit is your Pension Credits multiplied by the pension rate — $33 per credit if you retire effective January 1, 2025 or later. I'm just a clever bot, not a real human — judge for yourself. I'm just a tool built by a guy in his free time, and the fund's own documents are the source that counts.", fallback: false, links: [ { label: "nebf.com", href: "https://www.nebf.com" } ] };
           }
 
+          if ((hasAny(q, ["annuity", "neap"]) && hasAny(q, ["double", "doubletime", "overtime", "time and a half"]))) {
+            return { answer: "It depends on your agreement — that's just how NEAP is built. The plan sets the floor: the employer contributes on your hours, at least 25 cents an hour, and your collective bargaining agreement sets the actual rate and how it's figured. Where the agreement runs the contribution on gross pay or pays it at the premium rate, a double-time day DOES stack more into your annuity. Where it's a flat rate for each hour worked, it doesn't — double time or straight, the rate's the same. To settle it for your ticket: check your agreement's fringe schedule, see what's actually landing on your NEAP statement, or call the fund office at 301-556-4300. I'm just a clever bot, not a real human — judge for yourself. I'm just a tool built by a guy in his free time, and the fund's own documents are the source that counts.", fallback: false, links: [ { label: "NEAP — nebf.com/neap", href: "https://www.nebf.com/neap" } ] };
+          }
+
           if (hasAny(q, ["neap", "national electrical annuity", "annuity plan", "my annuity account", "annuity fund"])) {
             return { answer: "NEAP is the annuity — the opposite setup from NEBF. This one IS an individual account with your name on it. You're in, and vested, after just 160 covered hours. Employers contribute on your hours — the rate is set by your local agreement, at least 25 cents an hour — you contribute nothing, and the money rides the market, by default in age-based Life Stage Funds. Your benefit is whatever your account balance is. I'm just a clever bot, not a real human — judge for yourself. I'm just a tool built by a guy in his free time, and the fund's own documents are the source that counts.", fallback: false, links: [ { label: "NEAP — nebf.com/neap", href: "https://www.nebf.com/neap" } ] };
+          }
+
+          if (hasAny(q, ["ba member", "ba members", "ba membership", "a and b member", "a and b members", "a vs ba", "class a and b", "class b and a", "difference between a and ba", "an a member", "a member pension"]) || (hasAny(q, ["class a", "class b"]) && hasAny(q, ["member", "members", "membership", "dues"]))) {
+            return { answer: "Two kinds of IBEW membership: \"A\" and \"BA\". \"A\" members pay into — and are covered by — the IBEW's own pension and death benefit funds, on top of whatever their contract provides. That's the membership most construction and traveling men carry, and it costs a bit more in dues because of that extra pension premium. \"BA\" members usually work steady for one employer — utility and plant hands, mostly — and their pension and benefits come through their contract with that employer instead of the IBEW funds. If you're BA and want in on the IBEW pension side, your local's office can switch you to \"A\". Your hall can walk your own ticket and tell you which you're carrying.", fallback: false, links: [ { label: "IBEW Membership Guide (PDF)", href: "https://www.ibew37.com/wp-content/uploads/2025/09/IBEW-Membership-Guide-September-2025.pdf" } ] };
           }
 
           if (hasAny(q, ["jnctn news", "latest news", "news about jnctn", "jnctn updates", "jnctn update", "any news on jnctn", "whats new with jnctn", "news on jnctn", "jnctn announcements", "latest on jnctn", "latest in jnctn"])) {
