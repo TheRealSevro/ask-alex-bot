@@ -278,7 +278,6 @@
         var LOG_ENDPOINT = "https://igksegnaoqogcpjdyomp.supabase.co/rest/v1/chatbot_logs";
         var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlna3NlZ25hb3FvZ2NwamR5b21wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NTc5NTMsImV4cCI6MjEwNzEzMzk1M30.kp4diq1Xbc_Sp0ryrupEZG53Ugmbcohi05HyDkMrw0M";
         var FALLBACKS = [
-          "That question's past what I know right now — they top me off pretty steady, so try me again in a bit. Till then, your hall's your surest bet, or use the Ask Alex button below.",
           "No dice on that one from me yet — I pick up new answers as they keep building me out, so ask again on your next pass. Call your hall if you need it now, or tap Ask Alex below.",
           "That one's beyond me for now — fresh answers keep showing up in here, so ask me again sometime soon. If it can't wait, your hall can help, or send it through Ask Alex below.",
           "I'm empty-handed on that one for now — they add fresh answers in here steady, so try me again later on. For today, check with your hall or send it in through the Ask Alex button below.",
@@ -289,7 +288,8 @@
           "That one hasn't made it to the job trailer yet — they bring me fresh answers on the regular, so ask again when you swing back. Need it now, your hall's the place, or use the Ask Alex button below.",
           "That one's not in my bucket yet — they fill me in with new answers near every day, so circle back and try me again. Your hall can square you away today, or shoot it through the Ask Alex button below.",
           "That one's still out on the wire for me — they keep me updated with fresh answers regular, so check back next time around. Your hall can get you sorted today, or send it through the Ask Alex button below.",
-          "That one hasn't landed on my desk yet — they hand me new answers steady, so ask again when you're back through. Your hall can clear it up today, or run it in through the Ask Alex button below."
+          "That one hasn't landed on my desk yet — they hand me new answers steady, so ask again when you're back through. Your hall can clear it up today, or run it in through the Ask Alex button below.",
+          "I don't know that one yet, plain and simple — new answers get added here regular, so check back and ask again. If you need an answer today, call your hall, or use the Ask Alex button below."
         ];
 
         // Conditions answer bank, baked in from contract data. Keys are local numbers.
@@ -566,8 +566,12 @@
             return { answer: "Any individual can get JNCTN free — grab it from the App Store or Google Play (links under this answer) and capture your own credentials yourself. Your data is yours: you're free to upload it and secure it, and JNCTN walks you through how to share it, step by step — the how-tos are on their help pages, also linked below. One distinction that matters: self-captured is UNVERIFIED until your hall signs on, because your hall owns the verification — that's when it becomes proof a contractor can trust. The hall that's on it today is Local 876; if that's yours, your hall gets you set up verified from the start. If your hall isn't on it yet, here's what speeds it up: members asking their executive board and their BA for a sit-down with Alex. He's available anytime and easy to find, and he'd love the chat — but he won't pester anybody or try to force a meeting; he respects their time too much for that.", fallback: false, links: [ { label: "Get it on the App Store", href: "https://apps.apple.com/us/app/jnctn/id1592948898?uo=4" }, { label: "Get it on Google Play", href: "https://play.google.com/store/apps/details?id=nz.jnctn.ronder" }, { label: "JNCTN help & how-tos", href: "https://help.jnctn.nz/hc/en-us" }, { label: "jnctn.us", href: "https://jnctn.us" } ] };
           }
 
+          if (hasAny(q, ["online", "remotely", "remote", "by email", "by fax", "over the phone", "from home", "in person", "without going", "without driving"]) && hasAny(q, ["sign the", "sign book", "signing", "sign online", "sign in person"]) && !(hasAny(q, ["resign", "resigning", "quit"]) && !hasAny(q, ["book"]))) {
+            return { answer: "Depends on the hall — there's no one rule. A growing number of locals let you sign remotely now: some take your initial sign by email or fax, some run it online, and Local 876 does the whole thing through the JNCTN app — no trip to the hall at all. Plenty of halls still want you in person, at least the first time, and re-sign rules are all over the map too. Before you drive anywhere, check that local's own website or call its dispatcher — that's the answer that counts.", fallback: false };
+          }
+
           if (hasAny(q, ["how do i sign", "how to sign", "sign the books", "signing the books", "sign the book", "get on the books", "get on the book", "sign up on the books", "re sign the books", "resign the books"])) {
-            return { answer: "You sign at the hall, in person, with your ticket and ID — and most halls make you re-sign on their schedule to stay on the book. Every hall runs theirs a little different, so call that hall before you make the drive.", fallback: false };
+            return { answer: "How you sign depends on the hall. Plenty still sign you in person at the hall with your ticket and ID — but a growing number take it remotely now, some by email or through an app — and most halls make you re-sign on their schedule to stay on the book. Every hall runs theirs a little different, so call that hall before you make the drive.", fallback: false };
           }
 
           if (hasAny(q, ["resign from my job", "resign my job", "want to resign", "resigning from", "resign from", "hand in my notice", "quit my job", "quit this job", "leave my job", "leaving my job", "i want to quit"])) {
@@ -582,7 +586,7 @@
             return { answer: "Book 3 is usually where applicants sign — moving to Book 1 generally means getting into the local itself: membership, the apprenticeship, or an organizing-in path, and every hall runs that different. There's no single road, so ask your hall what takes a man from Book 3 to Book 1 there — they'll tell you straight.", fallback: false };
           }
 
-          if (hasAny(q, ["sign the books", "sign book", "book 1", "book 2", "book1", "book2", "what are the books", "explain the books", "the books"])) {
+          if (hasAny(q, ["sign the books", "sign book", "book 1", "book 2", "book1", "book2", "what are the books", "explain the books", "the books", "what book do i", "which book do i", "what book should i", "which book should i"])) {
             return { answer: "Book 1 is usually home-local members, Book 2 is travelers from other locals — but every hall runs its own books its own way. Your hall has the real rules for you.", fallback: false };
           }
 
