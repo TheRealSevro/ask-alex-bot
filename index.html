@@ -292,12 +292,13 @@
           "I'm blank on that one for now — they keep putting new answers in here, so try me again down the line. Your hall's got you today, or get it to Alex through the Ask Alex button below."
         ];
 
-        // Conditions answer bank, baked in from contract data. Keys are local numbers.
-        // Every entry: names the CBA, carries its currency, states only what the contract
-        // says, and closes with hall deference. Sources are NEVER named in answers.
+        // Conditions answer bank. Keys are local numbers. An entry is added ONLY from a
+        // local's own published material; every entry names that source in the answer,
+        // carries its date, states only what the source says, and closes with hall
+        // deference — the hall's word beats this bot's, every time.
         var CONDITION_DATA = {
         };
-        var HALL_ONLY = "That's a hall conversation — talk to your hall for details.";
+        var HALL_ONLY = "That's JNCTN's company business — their pricing and ownership aren't mine to lay out. What's public, and what matters to a member: halls pay for the program, members don't, and Alex holds 5% equity plus commission — he discloses that on his site. For company details, JNCTN's own site is the place.";
         var MONEY_ANSWERS = [
           "It's free for the worker — you don't pay to carry your own credentials. Halls and contractors pay to use the system. Your data is never sold; that's the whole point."
         ];
@@ -366,8 +367,8 @@
         function answerQuestion(question) {
           var q = normalize(question);
 
-          if (hasAny(q, ["your source", "your sources", "what database", "which database", "your database", "who feeds you", "answers come from", "where do you get your answers", "where do you get your info", "where do you get your information", "where do you get your data", "trained on", "training data", "who programmed you", "who built you", "who made you"]) || q.indexOf("line" + "vault") > -1 || q.indexOf("line " + "vault") > -1) {
-            return { answer: "Alex keeps my answers fed and updates me daily — beyond that I don't get into my sources. If something's missing, tap Ask Alex and he'll get it added.", fallback: false };
+          if (hasAny(q, ["your source", "your sources", "what database", "which database", "your database", "who feeds you", "answers come from", "where do you get your answers", "where do you get your info", "where do you get your information", "where do you get your data", "trained on", "training data", "who programmed you", "who built you", "who made you"])) {
+            return { answer: "Alex keeps my answers fed and updates me near every day. Where an answer comes from the funds or a hall, I say so in the answer — and the hall's word beats mine every time. If something's missing, tap Ask Alex and he'll get it added.", fallback: false };
           }
 
           if (hasAny(q, ["pretend to be alex", "act as alex", "write as alex", "post as alex", "speak as alex", "talk as alex", "impersonate alex", "impersonating alex", "roleplay as alex", "role play as alex", "pretend youre alex", "pretend you are alex", "as if you were alex", "in alexs voice", "write like alex"]) || (hasAny(q, ["write", "draft", "compose", "create", "make", "post", "announce", "record"]) && hasAny(q, ["as alex"]))) {
@@ -436,7 +437,7 @@
             (hasAny(q, ["trampgps", "tramp gps"]) && hasAny(q, ["better", "best", "beats", "love", "wins", "rules"]))
           ) {
             var baitAnswers = [
-              "Don't you have something better to do? This is a brotherhood, not for sale — even the bots.",
+              "I don't have anything solid on that one — ask me about the books, benefits, switching over, or how JNCTN works and I'll give you a straight answer.",
               "Cute. This is a brotherhood, not for sale — and I'm just the bot. Got a real question?",
               "Someone's bored. Brotherhood's not for sale, bots included. What do you actually need?"
             ];
@@ -453,7 +454,7 @@
           }
 
           if (hasAny(q, ["sell my data", "sell data", "data sales", "selling data", "sell member data", "jnctn privacy", "who owns the data"])) {
-            return { answer: "No. No ads, no data sales, ever. The hall owns the data, the rules, and the dashboard.", fallback: false };
+            return { answer: "No. No ads, no data sales, ever. The member holds the credential and controls who sees it — and your hall stays the source of truth, because the hall issued it.", fallback: false };
           }
 
           if (hasAny(q, ["aptitude test", "pre test", "pretest", "aptitude", "entrance exam", "entrance test"])) {
@@ -461,7 +462,7 @@
           }
 
           if (hasAny(q, ["groundman", "ground man", "get into the trade", "getting into the trade", "tips for getting in", "how do i get in the trade"])) {
-            return { answer: "You're on the right track — that's exactly how plenty of men get in. Stay signed on the groundman books and take the calls you can: those hours are the point, and showing up steady is what gets your name known. The ticket you've already built — Class A with tanker and doubles, CPR/first aid, OSHA 10, flagger — is the stuff halls and contractors actually ask a groundman for, so keep every one of them current. When the apprenticeship opens applications, that groundman time and experience works in your favor — each JATC weighs it their own way, so ask yours what they credit. And ask the halls you're signed with what else they like to see — they'll tell you straight.", fallback: false };
+            return { answer: "You're on the right track — that's exactly how plenty of men get in. Stay signed on the groundman books and take the calls you can: those hours are the point, and showing up steady is what gets your name known. The paper halls and contractors ask a groundman for — a Class A CDL if you've got it, CPR/first aid, OSHA 10, flagger — keep every bit of it current. When the apprenticeship opens applications, that groundman time and experience works in your favor — each JATC weighs it their own way, so ask yours what they credit. And ask the halls you're signed with what else they like to see — they'll tell you straight.", fallback: false };
           }
 
           if (hasAny(q, ["apprenticeship was cancelled", "apprenticeship was canceled", "apprenticeship got cancelled", "cancelled my apprenticeship", "canceled my apprenticeship", "my apprenticeship was cancelled", "apprenticeship cancelled", "apprenticeship canceled"]) && hasAny(q, ["test in", "testing in", "test into", "journeyman", "hours", "records", "experience", "reinstate", "denied"])) {
@@ -477,11 +478,11 @@
           }
 
           if (hasAny(q, ["become a lineman", "be a lineman", "get into the apprenticeship", "join the apprenticeship", "lineman apprenticeship", "jatc", "apprentice program", "apprenticeship program", "start an apprenticeship"])) {
-            return { answer: "Apply through your local IBEW JATC apprenticeship program — that's the union path. About 4 years, you earn while you learn. Your hall can point you to the right JATC.", fallback: false };
+            return { answer: "Apply through your local IBEW JATC apprenticeship program — that's the union path. Outside line runs about three and a half years, inside wireman about five — you earn while you learn either way, and your JATC sets the exact terms. Your hall can point you to the right JATC.", fallback: false };
           }
 
           if (hasAny(q, ["side gig", "side gigs", "side hustle", "side hustles", "side job", "side jobs", "side work", "extra money", "second job", "moonlight"])) {
-            return { answer: "The ones I point Brothers to: tree work, making content like I do, and gig work that takes you when you can get it — I know guys who run Uber and Uber Eats between storms. And use what the trade taught you; that's why linemen always have three things going. Keep it clean with your hall, and leave paid side electrical work alone — that one's a CBA problem.", fallback: false };
+            return { answer: "The ones Alex points brothers to: tree work, making content like he does, and gig work that takes you when you can get it — he knows guys who run Uber and Uber Eats between storms. And use what the trade taught you; that's why linemen always have three things going. Keep it clean with your hall, and leave paid side electrical work alone — that one's a CBA problem.", fallback: false };
           }
 
           if (hasAny(q, ["find work", "looking for work", "job calls", "union jobs", "where is the work", "work available", "tramp here bro", "trampherebro", "open calls", "is there work"])) {
@@ -496,11 +497,11 @@
             if (localData) {
               return { answer: localData, fallback: false };
             }
-            return { answer: "Conditions means the whole package — storm overtime ladder, double-time triggers, working dues %, scale, meal money. It lives in the local's contract, and I don't have that contract in front of me — try the hall's website or Union Storm Chasers. Heads up, though: JNCTN is building contract integrations right now — inside 90 days, the wallet should show the referral you're on and the conditions you're working under, with running LINECO, retirement, and fringe totals and paycheck discrepancy checks. It's free — but it only turns on if your hall participates, because your hall has to be able to verify your ticket before any of it can display. That part's deliberate: it protects the IBEW and your benefits.", fallback: false };
+            return { answer: "Conditions means the whole package — storm overtime ladder, double-time triggers, working dues %, scale, meal money. It lives in the local's contract, and I don't have that contract in front of me — try the hall's website or Union Storm Chasers. The wallet shows credentials today. Anything beyond that — referrals, conditions, benefit totals showing up in an app — only happens if a hall and the funds build it with JNCTN. Nothing runs on your hall without your hall.", fallback: false };
           }
 
           if ((hasAny(q, ["lineman", "linemen", "journeyman", "jl"]) && hasAny(q, ["make", "pay", "salary", "wage", "earn"])) || hasAny(q, ["what do linemen make", "lineman pay", "lineman salary"])) {
-            return { answer: "Pay varies a lot. Alex openly admits he made 90k his first year and hasn't dropped below 200k since he topped out — but he works a lot of overtime.", fallback: false };
+            return { answer: "Pay varies a lot — by local, by classification, and by how much overtime a man works. Scale is set in each local's agreement, and a storm year pays nothing like a slow year. Alex's site has a Financials page that breaks down how lineman money actually works; for a real number, the local's agreement is the only one that counts.", fallback: false };
           }
 
           if (hasAny(q, ["when is the rodeo", "linemans rodeo", "lineman rodeo", "international rodeo", "rodeo date", "rodeo when", "overland park"])) {
@@ -511,7 +512,7 @@
           }
 
           if (hasAny(q, ["follow you", "social media", "tiktok", "instagram", "threads", "youtube", "alexwakeland", "socials"])) {
-            return { answer: "I'm @alexwakeland on TikTok, Instagram, Threads, and YouTube — all linked on my link tree.", fallback: false };
+            return { answer: "Alex is @alexwakeland on TikTok, Instagram, and Threads — YouTube is @ItsaYurboi. All of them are linked on his site.", fallback: false };
           }
 
           if ((hasAny(q, ["boot", "boots"]) && hasAny(q, ["cover", "covered", "pay", "paid", "reimburs", "allowance", "stipend"])) || hasAny(q, ["are work boots covered", "climbing boots covered", "boots covered"])) {
@@ -551,7 +552,7 @@
           }
 
           if (hasAny(q, ["what should i invest", "what do i invest in", "what to invest", "where should i invest", "where do i invest", "how should i invest", "how do i invest", "what stocks", "which stocks", "best investment", "invest my money", "investment advice", "investing advice", "what would you invest in", "where to put my money", "put my money", "what should i do with my money", "money to invest"])) {
-            return { answer: "Invest in what you know, and blue chip stocks. It won't make you rich overnight, but it won't leave you broke either. I'm a bot, not a financial planner — this is not financial advice, just info and Alex's take.", fallback: false };
+            return { answer: "That one's above my pay grade — I'm a bot, not a financial planner, and nothing here is financial advice. The honest version from Alex's Financials page: learn what the words mean first — Roth IRA, HSA, that whole shelf — then ask any money man how he gets paid and whether he's a fiduciary, in writing, and check his record on FINRA BrokerCheck before a dime moves.", fallback: false };
           }
 
           if (hasAny(q, ["financials", "fincial", "financial tab", "financials tab", "find financials", "money guy", "financial advisor", "financial adviser", "financial planning", "tax guy", "retirement planning"])) {
@@ -559,7 +560,7 @@
           }
 
           if (hasAny(q, ["where is", "how do i find", "where do i find", "cant find", "can t find", "on the site", "on his site", "on the website", "on alexs site"])) {
-            return { answer: "Everything's on Alex's site — alexwakeland.com, with tabs across the top: Home (Book Alex is up top), Financials for the money stuff, Spotlight, Friends, Gear I Use, Support the Brotherhood, Resources, Podcast & The Wire, How I Work, For Brands, and AI Improvements. Tell me what you're hunting and I'll point you at the right one.", fallback: false };
+            return { answer: "Everything's on Alex's site — alexwakeland.com. Four doors across the top: Money & Benefits (LINECO, Financials, NEBF & Retirement, Switch Over Help), The Brotherhood (Spotlight, Friends, Support the Brotherhood, The Fallen), Gear & Resources (Gear I Use, Resources), and Work With Me (For Brands, How I Work, Podcast & The Wire) — plus the AI Improvements page and Side Projects. Tell me what you're hunting and I'll point you at the right one.", fallback: false };
           }
 
           if (hasAny(q, ["how do i get jnctn", "how do i get on jnctn", "get on jnctn", "how do i join jnctn", "join jnctn", "sign up for jnctn", "download jnctn", "get the jnctn app", "jnctn app", "how do i sign up for jnctn"])) {
@@ -567,7 +568,7 @@
           }
 
           if ((hasAny(q, ["canadian", "canada"]) || hasAny(q, ["just cross", "cross over and sign", "cross the border and sign"])) && hasAny(q, ["sign the book", "sign book", "signing the book"])) {
-            return { answer: "You can sign — if you're an IBEW member with a travel card and a current dues receipt, a US local will put you on Book 2. But the book is a hiring list, not a work permit. Getting called off Book 2 without US work authorization puts you and the contractor in a bad spot. Status first, book second. General info, not legal advice.", fallback: false };
+            return { answer: "You can sign — if you're an IBEW member with a travel card and a current dues receipt, a US local can put you on its travelers' book if you meet that local's group criteria. But the book is a hiring list, not a work permit. Getting called off Book 2 without US work authorization puts you and the contractor in a bad spot. Status first, book second. General info, not legal advice.", fallback: false };
           }
 
           if (hasAny(q, ["canadian", "canada", "hydro one"]) && hasAny(q, ["storm", "mutual assistance", "hurricane", "crews come", "come down for"])) {
@@ -583,7 +584,7 @@
           }
 
           if (hasAny(q, ["canadian", "canada"]) && hasAny(q, ["electrician", "wireman", "inside work"])) {
-            return { answer: "Harder than the lineman's, because there are two gates: immigration status and a state license. For status, the usual route is a US employer petitioning for H-2B — and fair warning, in 2018 Bechtel and the IBEW tried exactly that for 350 journeyman wiremen and 150 welders at Plant Vogtle in Georgia, about 1,400 Canadians answered the call, and the Labor Department still denied it, saying the work wasn't temporary. It can work, but nobody can promise it. On top of that, most states want their own journeyman license before you do inside work. General info, not legal advice.", fallback: false };
+            return { answer: "Harder than the lineman's, because there are two gates: immigration status and a state license. For status, the usual route is a US employer petitioning for H-2B — and fair warning, in 2018 a big Georgia power project tried exactly that for 350 journeyman wiremen and 150 welders at Plant Vogtle, about 1,400 Canadians answered the call, and the Labor Department still denied it, saying the work wasn't temporary. It can work, but nobody can promise it. On top of that, most states want their own journeyman license before you do inside work. General info, not legal advice.", fallback: false };
           }
 
           if (hasAny(q, ["canadian", "canada"]) && hasAny(q, ["classification", "other trades", "which trades", "who can come", "welder", "operator", "groundman", "tree trimmer", "forester", "surveyor", "engineer", "apprentice", "substation", "relay tech"])) {
@@ -591,7 +592,7 @@
           }
 
           if (hasAny(q, ["online", "remotely", "remote", "by email", "by fax", "over the phone", "from home", "in person", "without going", "without driving"]) && hasAny(q, ["sign the", "sign book", "signing", "sign online", "sign in person"]) && !(hasAny(q, ["resign", "resigning", "quit"]) && !hasAny(q, ["book"]))) {
-            return { answer: "Depends on the hall — there's no one rule. A growing number of locals let you sign remotely now: some take your initial sign by email or fax, some run it online, and Local 876 does the whole thing through the JNCTN app — no trip to the hall at all. Plenty of halls still want you in person, at least the first time, and re-sign rules are all over the map too. Before you drive anywhere, check that local's own website or call its dispatcher — that's the answer that counts.", fallback: false };
+            return { answer: "Depends on the hall — there's no one rule. A growing number of locals let you sign remotely now: some take your initial sign by email or fax, some run it online, and Local 876 takes its book signs through the JNCTN app — that's the hall's own setup: their book, their rules, the app is just how you reach it. Plenty of halls still want you in person, at least the first time, and re-sign rules are all over the map too. Before you drive anywhere, check that local's own website or call its dispatcher — that's the answer that counts.", fallback: false };
           }
 
           if (hasAny(q, ["how do i sign", "how to sign", "sign the books", "signing the books", "sign the book", "get on the books", "get on the book", "sign up on the books", "re sign the books", "resign the books"])) {
@@ -607,11 +608,11 @@
           }
 
           if (hasAny(q, ["book 3", "book3", "book three", "third book"])) {
-            return { answer: "Book 3 is usually where applicants sign — moving to Book 1 generally means getting into the local itself: membership, the apprenticeship, or an organizing-in path, and every hall runs that different. There's no single road, so ask your hall what takes a man from Book 3 to Book 1 there — they'll tell you straight.", fallback: false };
+            return { answer: "Book 3 is where new hands and applicants usually sign. The road up runs through the apprenticeship, an organizing-in placement, or building the qualifications the higher groups ask for — it's about meeting the group's tests, not about which local you carry a card from. Every hall runs that different, so ask your hall what moves a man up there — they'll tell you straight.", fallback: false };
           }
 
           if (hasAny(q, ["sign the books", "sign book", "book 1", "book 2", "book1", "book2", "what are the books", "explain the books", "the books", "what book do i", "which book do i", "what book should i", "which book should i"])) {
-            return { answer: "Book 1 is usually home-local members, Book 2 is travelers from other locals — but every hall runs its own books its own way. Your hall has the real rules for you.", fallback: false };
+            return { answer: "The books are groups, and the groups run on qualifications — journeyman ticket, years in the trade, and time worked in that local's jurisdiction are the usual tests. Book 1 is the first group called. Book 2 is the next group down, and that's where most travelers land. It's not sorted by which local you belong to — and every hall's referral rules draw the lines a little different, so your hall has the real rules for you.", fallback: false };
           }
 
           if (hasAny(q, ["test into", "testing into", "testing in", "tested in", "white ticket", "salt", "salting", "test in to"]) || (q.indexOf("test in") > -1 && hasAny(q, ["union", "jl", "journeyman", "hall", "local", "ibew"]))) {
@@ -619,7 +620,7 @@
           }
 
           if (hasAny(q, ["switch over", "switch to the union", "join the union", "white ticket", "signing the books", "journeyman testing", "union switch over help", "non union", "nonunion", "switching to union", "switching", "go union", "joining the union", "unionize", "transfer my ticket", "transfer ticket"])) {
-            return { answer: "Look up the ‘IBEW Union Switch Over Help’ group on Facebook — covers white ticket, signing the books, traveling, journeyman testing.", fallback: false };
+            return { answer: "Look up the ‘Union Switch Over Help’ group on Facebook — covers white ticket, signing the books, traveling, journeyman testing.", fallback: false };
           }
 
           if (hasAny(q, ["transfer my hours", "transfer hours", "hours transfer", "transferring hours", "will transfer", "hours count toward", "get credit", "dol card", "credit for my hours", "my hours count", "how many hours transfer"])) {
@@ -639,7 +640,7 @@
           }
 
           if (hasAny(q, ["lineco eligible", "lineco eligibility", "eligible for lineco", "when am i covered", "how many hours for insurance", "how many hours do i need for coverage", "125 hours", "am i covered", "insurance for the month", "when does my coverage start", "when do my benefits start"])) {
-            return { answer: "LINECO eligibility runs on credited hours — the hours your employer contributes on. First time: once you hit 125 credited hours in a month, coverage starts the 1st of the benefit month after the lag month — work 125 in December, you're covered February 1. Your dependents come on the same day you do, and kids are covered through age 25. I'm just a clever bot, not a real human — judge for yourself. I'm just a tool built by a guy in his free time, and LINECO's own site is the source that counts.", fallback: false, links: [ { label: "LINECO — Eligibility", href: "https://www.lineco.org/public/benefits/eligibility" } ] };
+            return { answer: "LINECO eligibility runs on credited hours — the hours your employer contributes on. First time: once you hit 125 credited hours in a month, coverage starts the 1st of the benefit month after the lag month — work 125 in December, you're covered February 1. Your dependents come on the same day you do, and kids are covered until their 26th birthday — the Fund's book carries the exact rule. I'm just a clever bot, not a real human — judge for yourself. I'm just a tool built by a guy in his free time, and LINECO's own site is the source that counts.", fallback: false, links: [ { label: "LINECO — Eligibility", href: "https://www.lineco.org/public/benefits/eligibility" } ] };
           }
 
           if (hasAny(q, ["retiree", "retired", "retirement"]) && hasAny(q, ["cobra"])) {
@@ -647,7 +648,7 @@
           }
 
           if (hasAny(q, ["cobra", "short hours", "rollback", "keep my insurance", "keep my coverage", "lose my coverage", "losing coverage", "coverage between jobs", "self pay for coverage", "self-pay"])) {
-            return { answer: "To stay covered you need 125 credited hours a month — but there's a rollback: if your average over the last 12 months is still 125+, you stay eligible through a slow stretch. Short of that, you can self-pay the short hours: (160 minus your credited hours) times the current employer contribution rate, up to 6 months straight — then it's re-earn your hours or COBRA, which runs 18 months for lost hours or a lost job. Utility/REA men: the rollback and short-hours options don't apply to you — check the source. I'm just a clever bot, not a real human — judge for yourself. I'm just a tool built by a guy in his free time, and LINECO's own site is the source that counts.", fallback: false, links: [ { label: "LINECO — Eligibility", href: "https://www.lineco.org/public/benefits/eligibility" } ] };
+            return { answer: "To stay covered you need 125 credited hours a month — but there's a rollback: if your average over the last 12 months is still 125+, you stay eligible through a slow stretch. Short of that, you can self-pay the short hours: Know the catches before you use it: a self-pay month resets your rollback average, and self-pay months don't carry the Weekly Income benefit. The Fund Office runs the exact math off your own hours — 1-800-323-7268 — and the LINECO page on Alex's site walks the whole thing, COBRA included. I'm just a clever bot, not a real human — judge for yourself. I'm just a tool built by a guy in his free time, and LINECO's own site is the source that counts.", fallback: false, links: [ { label: "LINECO — Eligibility", href: "https://www.lineco.org/public/benefits/eligibility" } ] };
           }
 
           if (hasAny(q, ["hra", "health reimbursement"])) {
@@ -675,7 +676,7 @@
           }
 
           if (hasAny(q, ["hearing aid", "hearing aids", "truhearing", "vsp", "vision plan", "vision coverage", "vision benefits", "teladoc", "telemedicine", "counseling", "member assistance", "carelon", "lineco extras", "what else does lineco", "eye exam", "glasses"])) {
-            return { answer: "Beyond the medical plan, LINECO carries a few extras worth knowing: vision runs through VSP; hearing aids are paid at 100% when you go through TruHearing (outside it, 80% up to $2,500 a person); Teladoc is free 24/7 for common minor illnesses; and Carelon's Member Assistance Program gives you up to 6 free, confidential counseling visits. Their own lines: VSP 800-877-7195, TruHearing 833-723-8282, Teladoc 800-835-2362, Carelon 800-332-2191. I'm just a clever bot, not a real human — judge for yourself. I'm just a tool built by a guy in his free time, and LINECO's own site is the source that counts.", fallback: false, links: [ { label: "lineco.org", href: "https://www.lineco.org" } ] };
+            return { answer: "Beyond the medical plan, LINECO carries a few extras worth knowing: vision runs through VSP; hearing runs through the Fund's hearing network — the current vendor and number sit in the who-to-call table on the LINECO page of Alex's site, and the Fund Office confirms your coverage before you order anything; Teladoc is free 24/7 for common minor illnesses; and Carelon's Member Assistance Program gives you up to 6 free, confidential counseling visits. Their own lines: VSP 800-877-7195, Teladoc 800-835-2362, Carelon 800-332-2191. I'm just a clever bot, not a real human — judge for yourself. I'm just a tool built by a guy in his free time, and LINECO's own site is the source that counts.", fallback: false, links: [ { label: "lineco.org", href: "https://www.lineco.org" } ] };
           }
 
           if (hasAny(q, ["does lineco cover", "will lineco cover", "is it covered by lineco", "does my insurance cover", "will my insurance cover", "does insurance cover"]) || (hasAny(q, ["cancer", "diabetes", "tumor", "surgery", "heart attack", "stroke", "asthma", "specific condition"]) && hasAny(q, ["cover", "covered", "pay for", "insurance", "lineco", "benefits"]))) {
@@ -683,7 +684,7 @@
           }
 
           if (hasAny(q, ["lineco"])) {
-            return { answer: "LINECO is the health & welfare fund for outside construction — the insurance side of the trade. I can walk you through eligibility (125 credited hours), keeping your coverage between jobs, your HRA, missing hours, and retiree benefits — or the Fund Office is at 800-323-7268. Pension isn't LINECO; that's NEBF and your local's funds. I'm just a clever bot, not a real human — judge for yourself. I'm just a tool built by a guy in his free time, and LINECO's own site is the source that counts.", fallback: false, links: [ { label: "lineco.org", href: "https://www.lineco.org" } ] };
+            return { answer: "LINECO is the health & welfare fund for outside construction — the insurance side of the trade, for the locals and agreements that participate in it. I can walk you through eligibility (125 credited hours), keeping your coverage between jobs, your HRA, missing hours, and retiree benefits — or the Fund Office is at 800-323-7268. Pension isn't LINECO; that's NEBF and your local's funds. I'm just a clever bot, not a real human — judge for yourself. I'm just a tool built by a guy in his free time, and LINECO's own site is the source that counts.", fallback: false, links: [ { label: "lineco.org", href: "https://www.lineco.org" } ] };
           }
 
           if (hasAny(q, ["nebf vesting", "am i vested", "vested in nebf", "break in service", "lose my pension credits", "lose my credits"])) {
@@ -735,7 +736,7 @@
           }
 
           if (hasAny(q, ["data war", "workforce data", "brotherhood into the product", "member data security", "data security standard"])) {
-            return { answer: "Workforce-data platforms are turning the brotherhood into the product. The fix is a member-data security standard — third-party run, binding on everyone including the halls.", fallback: false };
+            return { answer: "Workforce-data platforms are turning the brotherhood into the product. The fix is a member-data security standard — one every platform has to meet, and one any hall can choose to require. Halls run their own house; a standard just gives them something solid to point at.", fallback: false };
           }
 
           if (hasAny(q, ["book alex", "book you", "speaking", "speak at", "speaker", "podcast", "interview alex", "booking inquiry"])) {
@@ -746,8 +747,8 @@
             return { answer: "His newsletter — he approves every name by hand. Sign up on his link tree.", fallback: false };
           }
 
-          if (hasAny(q, ["syngyn", "mfjl", "peppers", "affiliate code"])) {
-            return { answer: "An affiliate he actually uses. Code MFJL gets $ off. He calls what they sell ‘peppers.’", fallback: false };
+          if (hasAny(q, ["affiliate code", "discount code", "promo code"])) {
+            return { answer: "The one you'll see most: ONLYSPANS takes 10% off at High Voltage Industries. Alex's codes live on his For Brands and Gear pages — if it's not listed there, he doesn't have one.", fallback: false };
           }
 
           if (hasAny(q, ["who is alex", "about alex", "alex wakeland", "what does alex do", "where is alex from"])) {
@@ -755,7 +756,7 @@
           }
 
           if (hasAny(q, ["verify", "verification", "who verifies", "does jnctn verify", "prove my ticket", "prove ticket", "ticket anywhere", "can call and verify"])) {
-            return { answer: "JNCTN doesn't do the verifying — it links straight to the source, and your hall does the verifying. It's the secure way to show your proof. Hall's on JNCTN? Prove your ticket anywhere. Not on it? An in-network hall can call and verify you — trusted till it expires and you upload a new one.", fallback: false };
+            return { answer: "JNCTN doesn't do the verifying — it links straight to the source, and your hall does the verifying. And your standing at a hall is still proven the way it always has been: your home local's dues receipt and travel card, under the host hall's own rules. The app just puts a checkable copy of your credentials in your pocket. The hall's word is what counts.", fallback: false };
           }
 
           if (pendingRole) {
@@ -768,7 +769,7 @@
                 return { answer: "For a company, JNCTN is deployability. The hands you hire show up with credentials already verified against the source — no chasing paperwork or phone tag before a man can get on property. You know the ticket's real before the work starts.", fallback: false };
               }
               if (hasAny(q, ["hall", "local", "union"])) {
-                return { answer: "For a hall, JNCTN is an unfakable ticket and quieter phones. Verification links straight to the source instead of your office playing middleman, members can prove themselves anywhere, and the hall keeps control of its own data, start to finish.", fallback: false };
+                return { answer: "For a hall, JNCTN is a ticket that checks back against the source, and quieter phones. Verification links straight to the source instead of your office playing middleman, members can prove themselves anywhere, and the hall keeps control of its own data, start to finish.", fallback: false };
               }
             }
           }
@@ -781,18 +782,18 @@
               return { answer: "For a company, JNCTN is deployability. The hands you hire show up with credentials already verified against the source — no chasing paperwork or phone tag before a man can get on property. You know the ticket's real before the work starts.", fallback: false };
             }
             if (hasAny(q, ["hall", "halls", "local", "locals", "union"])) {
-              return { answer: "For a hall, JNCTN is an unfakable ticket and quieter phones. Verification links straight to the source instead of your office playing middleman, members can prove themselves anywhere, and the hall keeps control of its own data, start to finish.", fallback: false };
+              return { answer: "For a hall, JNCTN is a ticket that checks back against the source, and quieter phones. Verification links straight to the source instead of your office playing middleman, members can prove themselves anywhere, and the hall keeps control of its own data, start to finish.", fallback: false };
             }
             pendingRole = true;
             return { answer: "Depends who's asking — JNCTN does different work depending on where you sit. Are you a worker, a company, or a union hall?", fallback: false };
           }
 
           if (hasAny(q, ["bring up jnctn", "bring jnctn", "jnctn to my hall", "get my hall on jnctn", "pitch jnctn", "tell my hall about jnctn", "raise jnctn", "jnctn at my hall", "jnctn to the hall"])) {
-            return { answer: "That's a New Business move. At your union meeting, under New Business, you can move that the board or the BA look into JNCTN. And Alex's standing offer: get it in front of your hall, and he will fly to whatever hall and meet as soon as possible.", fallback: false };
+            return { answer: "Any member can raise something under New Business — that's what it's there for. If JNCTN is what you're thinking of raising, two things should ride with it: Alex holds equity in JNCTN and earns commission when halls come on — he says that out loud — and the decision is the hall's, made the hall's way, with nobody pressuring the room. If a hall wants a look, they set it up through their own board.", fallback: false };
           }
 
           if (hasAny(q, ["union meeting", "meeting basics", "how do i speak at", "good of the union", "make a motion", "roberts rules", "new business", "at the meeting", "at a meeting", "how meetings work"])) {
-            return { answer: "A union meeting runs on an agenda: minutes from the last meeting, reports from officers and committees, unfinished business, new business, then Good of the Union — announcements and member concerns. To speak, you rise, address the chair, and wait to be recognized. A motion starts with 'I move that...' and ordinary motions need a second before debate and a vote. The structure comes from the IBEW Constitution with Robert's Rules filling the gaps, and speaking-time limits run by your local's own bylaws. New Business is where a member raises something new — including JNCTN.", fallback: false };
+            return { answer: "A union meeting runs on an agenda: minutes from the last meeting, reports from officers and committees, unfinished business, new business, then Good of the Union — announcements and member concerns. To speak, you rise, address the chair, and wait to be recognized. A motion starts with 'I move that...' and ordinary motions need a second before debate and a vote. The structure comes from the IBEW Constitution with Robert's Rules filling the gaps, and speaking-time limits run by your local's own bylaws. New Business is where a member raises something new.", fallback: false };
           }
 
           if (q === "jnctn" || q === "junction" || hasAny(q, ["what is jnctn", "whats jnctn", "jnctn what", "jnctn do", "about jnctn", "junction app"])) {
@@ -800,11 +801,11 @@
           }
 
           if (hasAny(q, ["did alex answer", "has alex answered", "did alex reply", "has alex replied", "did alex respond", "alex answer my question", "alex see my question", "did alex see", "alex get back to me", "has alex gotten back"])) {
-            return { answer: "I don't save who you are. Ask again and I'll see.", fallback: false };
+            return { answer: "I don't save who you are. Your name stays right here in this chat — the questions I pass along for new answers go without any names attached. Ask again any time.", fallback: false };
           }
 
           if (hasAny(q, ["did alex answer", "has alex answered", "alex answer my", "did alex reply", "has alex replied", "did alex respond", "alex respond", "my previous question", "my last question", "asked you earlier", "asked earlier", "did he answer", "answer my question"])) {
-            return { answer: "Sorry about that — I don't keep track of who asked what, and nothing here ties a question to a person between visits, so it's safe to ask anything. If I don't have the answer, it gets updated within 48 hours — but you do have to come back and ask again.", fallback: false };
+            return { answer: "Sorry about that — and so you know how this works: your name stays in this chat, and the questions I can't answer yet get logged without it, so Alex can teach me. Nothing ties a question to a person. If I don't have the answer, it gets updated within 48 hours — but you do have to come back and ask again.", fallback: false };
           }
 
           if (hasAny(q, ["unsafe", "safety concern", "safety issue", "breaking working conditions", "dangerous work", "report a foreman", "report my foreman", "training coordinator"])) {
@@ -883,7 +884,7 @@
 
         function logExchange(question, result) {
           postLog({
-            visitor_name: visitorName,
+            visitor_name: "anonymous",
             question: question,
             answer: result.answer,
             was_fallback: result.fallback
