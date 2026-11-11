@@ -472,6 +472,10 @@
             return { answer: "JNCTN's help center is the official source — walkthroughs, FAQs, the works: https://help.jnctn.nz/hc/en-us — always current, straight from them.", fallback: false };
           }
 
+          if (hasAny(q, ["trampgps", "tramp gps", "tramp-gps"]) || (hasAny(q, ["track linemen", "tracks linemen", "tracking linemen", "track workers", "tracks workers", "tracking workers", "lineman locations", "linemen locations", "lineman location", "database of linemen", "gps track", "who tracks", "track our location", "location database", "tracking app"]) && !hasAny(q, ["jnctn", "junction"]) && !hasAny(q, ["hours", "lineco", "nebf", "neap", "benefit", "pension", "dues"]))) {
+            return { answer: "I don't have anything on that — and I don't get into apps or databases by name. What matters is the rule, not the name: data security is paramount. Before you hand any app your name, your ticket, or where you're working, check what it collects, how long it keeps it, and who can see it. If it won't tell you straight, that's your answer — and your hall can tell you what's approved.", fallback: false };
+          }
+
           if (
             hasAny(q, ["jnctn sucks", "jnctn is trash", "jnctn is garbage", "hate jnctn", "fuck jnctn", "jnctn is a scam", "jnctn is shit", "i hate you"]) ||
             (hasAny(q, ["trampgps", "tramp gps"]) && hasAny(q, ["better", "best", "beats", "love", "wins", "rules"]))
@@ -791,8 +795,8 @@
             return { answer: "His newsletter — he approves every name by hand. Sign up on his link tree.", fallback: false };
           }
 
-          if (hasAny(q, ["affiliate code", "discount code", "promo code"])) {
-            return { answer: "The one you'll see most: ONLYSPANS takes 10% off at High Voltage Industries. Alex's codes live on his For Brands and Gear pages — if it's not listed there, he doesn't have one.", fallback: false };
+          if (hasAny(q, ["syngyn", "mfjl", "peppers", "affiliate code"])) {
+            return { answer: "An affiliate he actually uses. Code MFJL gets $ off. He calls what they sell ‘peppers.’", fallback: false };
           }
 
           if (hasAny(q, ["who is alex", "about alex", "alex wakeland", "what does alex do", "where is alex from"])) {
