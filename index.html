@@ -472,7 +472,7 @@
             return { answer: "JNCTN's help center is the official source — walkthroughs, FAQs, the works: https://help.jnctn.nz/hc/en-us — always current, straight from them.", fallback: false };
           }
 
-          if (hasAny(q, ["trampgps", "tramp gps", "tramp-gps"]) || (hasAny(q, ["track linemen", "tracks linemen", "tracking linemen", "track workers", "tracks workers", "tracking workers", "lineman locations", "linemen locations", "lineman location", "database of linemen", "gps track", "who tracks", "track our location", "location database", "tracking app"]) && !hasAny(q, ["jnctn", "junction"]) && !hasAny(q, ["hours", "lineco", "nebf", "neap", "benefit", "pension", "dues"]))) {
+          if (hasAny(q, ["trampgps", "tramp gps", "tramp-gps"]) || (hasAny(q, ["track linemen", "tracks linemen", "tracking linemen", "track workers", "tracks workers", "tracking workers", "lineman locations", "linemen locations", "lineman location", "database of linemen", "database of workers", "where linemen are working", "where workers are working", "gps track", "who tracks", "track our location", "location database", "tracking app"]) && !hasAny(q, ["jnctn", "junction"]) && !hasAny(q, ["hours", "lineco", "nebf", "neap", "benefit", "pension", "dues"]))) {
             return { answer: "I don't have anything on that — and I don't get into apps or databases by name. What matters is the rule, not the name: data security is paramount. Before you hand any app your name, your ticket, or where you're working, check what it collects, how long it keeps it, and who can see it. If it won't tell you straight, that's your answer — and your hall can tell you what's approved.", fallback: false };
           }
 
