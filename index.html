@@ -444,6 +444,26 @@
             return { answer: "Act on it in the app first: open your profile's information panel and hit 'Disable card' — that shuts the card off. Your organisation's admin can re-enable it or order you a new one. JNCTN's lost-card guide is below with the full run.", fallback: false, links: [ { label: "Lost or stolen card", href: "https://help.jnctn.nz/hc/en-us/articles/360032503272-Lost-or-Stolen-Card" }, { label: "Getting Started guides", href: "https://help.jnctn.nz/hc/en-us/sections/360006512431-Getting-Started" } ] };
           }
 
+          if (hasAny(q, ["jnctn", "junction"]) && hasAny(q, ["photo", "picture", "profile pic"])) {
+            return { answer: "JNCTN has rules for the photo on your profile — size, background, what they'll accept — and their photo guidelines below lay them out. Follow those and the photo won't bounce back at you.", fallback: false, links: [ { label: "Photo guidelines", href: "https://help.jnctn.nz/hc/en-us/articles/360034900412-Photo-Guidelines" }, { label: "Getting Started guides", href: "https://help.jnctn.nz/hc/en-us/sections/360006512431-Getting-Started" } ] };
+          }
+
+          if (hasAny(q, ["jnctn", "junction"]) && hasAny(q, ["email address", "change my email", "change email", "update my email", "wrong email", "email i used", "new email"])) {
+            return { answer: "Your email address is your JNCTN identity — it's how the registration and reset links reach you. JNCTN's guide below covers how the email on your account works and what to do if it changes.", fallback: false, links: [ { label: "Your email address", href: "https://help.jnctn.nz/hc/en-us/articles/360032502152-Your-Email-Address" }, { label: "Getting Started guides", href: "https://help.jnctn.nz/hc/en-us/sections/360006512431-Getting-Started" } ] };
+          }
+
+          if (hasAny(q, ["jnctn", "junction"]) && hasAny(q, ["share with", "sharing with", "other organisation", "other organization", "share my credentials with", "share with an organisation", "share with an organization", "share with my"])) {
+            return { answer: "Sharing with another organisation is its own flow in JNCTN, and the guide below walks it — who you can share with and what they see. The video demos show the credential-sharing side of it too.", fallback: false, links: [ { label: "Sharing with other organisations", href: "https://help.jnctn.nz/hc/en-us/articles/4404011929113-Sharing-with-other-organisations" }, { label: "Watch the video demos", href: "https://www.jnctn-inc.com/video-demos" } ] };
+          }
+
+          if (hasAny(q, ["jnctn", "junction"]) && hasAny(q, ["browser", "browsers", "chrome", "firefox", "safari browser"])) {
+            return { answer: "JNCTN keeps a list of the web browsers it supports and recommends — if the site is acting up on you, start there. The list is below, straight from JNCTN.", fallback: false, links: [ { label: "Recommended web browsers", href: "https://help.jnctn.nz/hc/en-us/articles/360032502112-Recommended-Web-Browsers" }, { label: "Getting Started guides", href: "https://help.jnctn.nz/hc/en-us/sections/360006512431-Getting-Started" } ] };
+          }
+
+          if (hasAny(q, ["jnctn", "junction"]) && hasAny(q, ["use the app", "using the app", "use the jnctn app", "how does the app work", "around the app"])) {
+            return { answer: "JNCTN's own guide to using the app is below — it walks the screens and what each part does. Pair it with the video demos and you'll have the whole run of the place.", fallback: false, links: [ { label: "Using the JNCTN app", href: "https://help.jnctn.nz/hc/en-us/articles/900006304866-Using-Jnctn-app" }, { label: "Watch the video demos", href: "https://www.jnctn-inc.com/video-demos" } ] };
+          }
+
           if (hasAny(q, ["jnctn", "junction"]) && hasAny(q, ["add a credential", "add my credential", "add credential", "share my credential", "share a credential", "sharing credential", "create my wallet", "create a wallet", "build my wallet", "upload my credential", "upload a credential", "my wallet"])) {
             return { answer: "The video demos below are built for exactly that — short walk-throughs from JNCTN on creating your wallet, adding a credential, and sharing one. The workers' start page lays out the same road in print: download the app, create a free account, add and share your credentials.", fallback: false, links: [ { label: "Watch the video demos", href: "https://www.jnctn-inc.com/video-demos" }, { label: "JNCTN for workers — start page", href: "https://www.jnctn-inc.com/workers" }, { label: "Getting Started guides", href: "https://help.jnctn.nz/hc/en-us/sections/360006512431-Getting-Started" } ] };
           }
