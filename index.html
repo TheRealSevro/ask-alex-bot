@@ -278,10 +278,6 @@
         var LOG_ENDPOINT = "https://igksegnaoqogcpjdyomp.supabase.co/rest/v1/chatbot_logs";
         var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlna3NlZ25hb3FvZ2NwamR5b21wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NTc5NTMsImV4cCI6MjEwNzEzMzk1M30.kp4diq1Xbc_Sp0ryrupEZG53Ugmbcohi05HyDkMrw0M";
         var FALLBACKS = [
-          "That one's still out of my hands for now — they keep me updated regular, so try me again next time through. Your hall can answer it today, or run it through the Ask Alex button below.",
-          "Can't speak to that one yet — new answers land in here all the time, so give it another shot later. If you need it today, your hall's the call, or hit the Ask Alex button below.",
-          "That one hasn't made it to the job trailer yet — they bring me fresh answers on the regular, so ask again when you swing back. Need it now, your hall's the place, or use the Ask Alex button below.",
-          "That one's not in my bucket yet — they fill me in with new answers near every day, so circle back and try me again. Your hall can square you away today, or shoot it through the Ask Alex button below.",
           "That one's still out on the wire for me — they keep me updated with fresh answers regular, so check back next time around. Your hall can get you sorted today, or send it through the Ask Alex button below.",
           "That one hasn't landed on my desk yet — they hand me new answers steady, so ask again when you're back through. Your hall can clear it up today, or run it in through the Ask Alex button below.",
           "I don't know that one yet, plain and simple — new answers get added here regular, so check back and ask again. If you need an answer today, call your hall, or use the Ask Alex button below.",
@@ -289,7 +285,11 @@
           "That one's not one I can answer yet — they bring me new ones steady, so check back when you pass through again. Your hall can help you today, or send it in through the Ask Alex button below.",
           "I'm still in the dark on that one — they teach me new answers regular, so check back and try again later. For today, talk to your hall or send it through the Ask Alex button below.",
           "That one hasn't hit my gang box yet — fresh answers get dropped in here all the time, so give me a try again sometime. Your hall can run it down today, or fire it through the Ask Alex button below.",
-          "I'm blank on that one for now — they keep putting new answers in here, so try me again down the line. Your hall's got you today, or get it to Alex through the Ask Alex button below."
+          "I'm blank on that one for now — they keep putting new answers in here, so try me again down the line. Your hall's got you today, or get it to Alex through the Ask Alex button below.",
+          "Haven't got that one under my belt yet — they top me up with new answers regular, so swing back and hit me again. Need it sorted today, call your hall or tap the Ask Alex button below.",
+          "That one ain't in my book yet — they feed me new ones regular, so try me again next time you're through. Your hall can sort you today, or send it in through the Ask Alex button below.",
+          "That one's past what I've picked up so far — they add to my answers near daily, so stop back by and ask once more. Can't wait on it, ring your hall or hit the Ask Alex button below.",
+          "That one's got me stumped for now — they keep teaching me more as we go, so swing back around and ask again. Need it handled today, your hall can take care of it, or put it through the Ask Alex button below."
         ];
 
         // Conditions answer bank. Keys are local numbers. An entry is added ONLY from a
@@ -725,6 +725,10 @@
 
           if (hasAny(q, ["hearing aid", "hearing aids", "truhearing", "vsp", "vision plan", "vision coverage", "vision benefits", "teladoc", "telemedicine", "counseling", "member assistance", "carelon", "lineco extras", "what else does lineco", "eye exam", "glasses"])) {
             return { answer: "Beyond the medical plan, LINECO carries a few extras worth knowing: vision runs through VSP; hearing runs through the Fund's hearing network — the current vendor and number sit in the who-to-call table on the LINECO page of Alex's site, and the Fund Office confirms your coverage before you order anything; Teladoc is free 24/7 for common minor illnesses; and Carelon's Member Assistance Program gives you up to 6 free, confidential counseling visits. Their own lines: VSP 800-877-7195, Teladoc 800-835-2362, Carelon 800-332-2191. I'm just a clever bot, not a real human — judge for yourself. I'm just a tool built by a guy in his free time, and LINECO's own site is the source that counts.", fallback: false, links: [ { label: "lineco.org", href: "https://www.lineco.org" } ] };
+          }
+
+          if (hasAny(q, ["insulin", "diabetes", "diabetic", "glucometer", "test strips", "blood sugar", "diabetes care program"])) {
+            return { answer: "Straight answer: insulin is NOT free by default. On the regular prescription plan (Express Scripts) it's 20% coinsurance at retail, or by mail order one copay for a 90-day supply — $10 generic, $20 preferred brand, $35 non-preferred (2026 Base Plan). The 100% path is LINECO's Diabetes Care Program — free to join for covered participants with Type 1 or Type 2: insulin covered at 100%, a free glucometer and free test strips, insulin pumps and supplies and oral diabetes meds at no copay, endocrinologist visits at no copay, and your own nurse health coach. Enrollment is the step most men miss: there's no form — call the Fund Office at 1-800-323-7268 and ask to enroll in the Diabetes Care Program. Diabetes supplies and copays are also HRA-qualified if you'd rather run them through your HRA. I'm just a clever bot, not a real human — judge for yourself. I'm just a tool built by a guy in his free time, and LINECO's own site is the source that counts.", fallback: false, links: [ { label: "LINECO — Prescriptions", href: "https://www.lineco.org/public/benefits/prescriptions" }, { label: "lineco.org", href: "https://www.lineco.org" } ] };
           }
 
           if (hasAny(q, ["does lineco cover", "will lineco cover", "is it covered by lineco", "does my insurance cover", "will my insurance cover", "does insurance cover"]) || (hasAny(q, ["cancer", "diabetes", "tumor", "surgery", "heart attack", "stroke", "asthma", "specific condition"]) && hasAny(q, ["cover", "covered", "pay for", "insurance", "lineco", "benefits"]))) {
