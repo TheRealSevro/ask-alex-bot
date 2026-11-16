@@ -87,6 +87,13 @@
       }
 
       .disclaimer strong { color: var(--ink); font-weight: 650; }
+      .esc-box { margin: 6px 0 2px; padding: 10px 12px; border: 1px solid rgba(0,0,0,0.14); border-radius: 10px; background: rgba(255,255,255,0.5); }
+      .esc-box p { margin: 0 0 8px; }
+      .esc-btn { font: inherit; font-weight: 650; padding: 7px 14px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.25); background: #f5b921; color: #1a1512; cursor: pointer; }
+      .esc-btn[disabled] { opacity: 0.55; cursor: default; }
+      .esc-box label { display: block; font-weight: 650; margin: 8px 0 3px; }
+      .esc-box input, .esc-box textarea { width: 100%; font: inherit; padding: 7px 9px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.25); box-sizing: border-box; }
+      .esc-note { font-size: 0.85em; opacity: 0.85; }
 
       .messages {
         min-height: 0;
@@ -929,6 +936,9 @@
             fallbackIdx++;
             return { answer: "I want to get you pointed right — give me a little more on that. Is it about work or the books, JNCTN, or something on Alex's site?", fallback: true };
           }
+          if (hasAny(q, ["talk to a human", "talk to a person", "real person", "actual person", "speak to alex", "talk to alex", "ask alex directly", "contact alex", "human please", "get me alex", "a person please"])) {
+            return { answer: "I can do that — I can send your question to Alex's team. They check the same documents and answer you direct, usually within the hour during the day. Use the button under this message and it'll go straight to them.", fallback: true, escalate: true };
+          }
           if (fallbackIdx > 0 && fallbackIdx % 4 === 3) {
             fallbackIdx++;
             return { answer: "We're open to suggestions to improve — I'm a one man show at the moment, so I'm doing my best.", fallback: true };
@@ -1044,12 +1054,120 @@
             }
           }
           window.setTimeout(function () {
-            addMessage(result.answer, "bot", result.fallback ? text : "", result.links || null);
+            addMessage(result.answer, "bot", "", result.links || null);
+            if (result.fallback) { offerEscalation(text); }
             sending = false;
             sendButton.disabled = false;
             input.focus();
           }, 180);
         });
+
+
+
+        // ===== Escalation path (STAGED 2026-11-15 — not live) =====
+        // Design: ~/workspace/lineco-bot-audit/ESCALATION-PATH-DESIGN-2026-11-15.md
+        // STAGED constants: fill at go-live (Worker URL + Turnstile sitekey are public-safe).
+        var ESCALATION_ENDPOINT = "https://ask-alex-escalations.nytn9bgwrg.workers.dev/ask";
+        var TURNSTILE_SITEKEY = "0x4AAAAAAGCsb9aYknbmC_Yn";
+        var escTurnstileLoaded = false;
+
+        function loadTurnstile(cb) {
+          if (window.turnstile) { cb(); return; }
+          if (escTurnstileLoaded) { window.setTimeout(function () { loadTurnstile(cb); }, 200); return; }
+          escTurnstileLoaded = true;
+          var s = document.createElement("script");
+          s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+          s.async = true;
+          s.onload = cb;
+          document.head.appendChild(s);
+        }
+
+        function offerEscalation(question) {
+          var row = document.createElement("div");
+          row.className = "message-row bot";
+          var box = document.createElement("div");
+          box.className = "bubble esc-box";
+          row.appendChild(box);
+          var p = document.createElement("p");
+          p.textContent = "That one's not in the documents I can search. I can send it to Alex's team — they check the same documents and answer you direct. Usually within the hour during the day; overnight questions get answered in the morning.";
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "esc-btn";
+          btn.textContent = "Send it to Alex's team";
+          btn.addEventListener("click", function () { showEscalationForm(box, question); });
+          box.appendChild(p);
+          box.appendChild(btn);
+          messages.appendChild(row);
+          messages.scrollTop = messages.scrollHeight;
+        }
+
+        function showEscalationForm(box, question) {
+          box.innerHTML = "";
+          var label = document.createElement("label");
+          label.textContent = "Your question";
+          var ta = document.createElement("textarea");
+          ta.rows = 3;
+          ta.maxLength = 1000;
+          ta.value = question || "";
+          var elabel = document.createElement("label");
+          elabel.textContent = "Email for the answer (optional)";
+          var email = document.createElement("input");
+          email.type = "email";
+          email.maxLength = 254;
+          email.placeholder = "you@example.com";
+          var note = document.createElement("p");
+          note.className = "esc-note";
+          note.textContent = "Email is optional for asking — but it's the only way the answer can reach you. Leave one and the answer comes to your inbox. It's used only to send that one answer: no list, no other use, ever.";
+          var tsDiv = document.createElement("div");
+          var send = document.createElement("button");
+          send.type = "button";
+          send.className = "esc-btn";
+          send.textContent = "Send it";
+          box.appendChild(label); box.appendChild(ta);
+          box.appendChild(elabel); box.appendChild(email);
+          box.appendChild(note); box.appendChild(tsDiv); box.appendChild(send);
+          var tsToken = "";
+          loadTurnstile(function () {
+            if (window.turnstile) {
+              window.turnstile.render(tsDiv, {
+                sitekey: TURNSTILE_SITEKEY,
+                callback: function (token) { tsToken = token; }
+              });
+            }
+          });
+          send.addEventListener("click", function () {
+            var qtext = ta.value.trim();
+            if (!qtext) { ta.focus(); return; }
+            send.disabled = true;
+            send.textContent = "Sending…";
+            var payload = { question: qtext, context: document.title || "", email: email.value.trim(), turnstileToken: tsToken };
+            var req = new XMLHttpRequest();
+            req.open("POST", ESCALATION_ENDPOINT, true);
+            req.setRequestHeader("Content-Type", "application/json");
+            req.timeout = 12000;
+            req.onload = function () {
+              if (req.status >= 200 && req.status < 300) {
+                box.innerHTML = "";
+                var done = document.createElement("p");
+                done.textContent = "Sent — Alex's team has it. If you left an email, watch your inbox. Answers carry the document links so you can check them yourself.";
+                box.appendChild(done);
+              } else {
+                send.disabled = false;
+                send.textContent = "Send it";
+                var err = document.createElement("p");
+                err.className = "esc-note";
+                err.textContent = "That didn't go through — give it another try in a bit.";
+                box.appendChild(err);
+              }
+            };
+            req.onerror = req.ontimeout = function () {
+              send.disabled = false;
+              send.textContent = "Send it";
+            };
+            req.send(JSON.stringify(payload));
+          });
+          messages.scrollTop = messages.scrollHeight;
+        }
 
         window.setTimeout(function () { input.focus(); }, 120);
       })();
